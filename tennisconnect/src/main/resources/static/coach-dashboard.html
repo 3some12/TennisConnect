@@ -159,33 +159,32 @@
         <div class="welcome-text">
             <div class="welcome-greeting">Coach Portal</div>
             <div class="welcome-name" id="coachWelcome">Loading...</div>
-            <div class="welcome-sub">You have 3 pending booking requests today.</div>
+            <div class="welcome-sub" id="coachWelcomeSub">Loading...</div>
         </div>
         <div class="welcome-badge">
-            <div class="welcome-badge-text">Today's Sessions</div>
-            <div class="welcome-badge-val">3 sessions</div>
+            <div class="welcome-badge-val" id="todaySessions">0 sessions</div>
         </div>
     </div>
 
     <div class="stats-grid">
         <div class="stat-card green">
             <div class="stat-label">Total Students</div>
-            <div class="stat-value">24</div>
+            <div class="stat-value" id="statStudents">0</div>
             <div class="stat-sub">Active this month</div>
         </div>
         <div class="stat-card gold">
             <div class="stat-label">Sessions This Month</div>
-            <div class="stat-value">18</div>
-            <div class="stat-sub">↑ 3 from last month</div>
+            <div class="stat-value" id="statSessions">0</div>
+            <div class="stat-sub">This month</div>
         </div>
         <div class="stat-card blue">
             <div class="stat-label">Avg Rating</div>
-            <div class="stat-value">4.9</div>
-            <div class="stat-sub">From 47 reviews</div>
+            <div class="stat-value" id="statRating">—</div>
+            <div class="stat-sub">Avg rating</div>
         </div>
         <div class="stat-card purple">
             <div class="stat-label">Revenue</div>
-            <div class="stat-value">$1,440</div>
+            <div class="stat-value" id="statRevenue">$0</div>
             <div class="stat-sub">This month</div>
         </div>
     </div>
@@ -197,42 +196,9 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">Pending Requests</div>
-                    <span style="background:#fff8e0;color:#a07828;border:1px solid #f0dfa0;font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;padding:0.2rem 0.6rem;">3 Pending</span>
+                    <span id="pendingBadge" style="background:#fff8e0;color:#a07828;border:1px solid #f0dfa0;font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;padding:0.2rem 0.6rem;">0 Pending</span>
                 </div>
                 <div class="card-body" id="requestsList">
-                    <div class="request-item">
-                        <div class="request-avatar">👤</div>
-                        <div class="request-info">
-                            <div class="request-name">Charity Wang</div>
-                            <div class="request-meta">📅 April 2, 2026 · 10:00 AM · Court A · Advanced Techniques</div>
-                        </div>
-                        <div class="request-actions">
-                            <button class="btn-accept" onclick="handleRequest(this,'accept')">Accept</button>
-                            <button class="btn-decline" onclick="handleRequest(this,'decline')">Decline</button>
-                        </div>
-                    </div>
-                    <div class="request-item">
-                        <div class="request-avatar">👤</div>
-                        <div class="request-info">
-                            <div class="request-name">Antonia Bondar</div>
-                            <div class="request-meta">📅 April 3, 2026 · 2:00 PM · Court B · Competitive Training</div>
-                        </div>
-                        <div class="request-actions">
-                            <button class="btn-accept" onclick="handleRequest(this,'accept')">Accept</button>
-                            <button class="btn-decline" onclick="handleRequest(this,'decline')">Decline</button>
-                        </div>
-                    </div>
-                    <div class="request-item">
-                        <div class="request-avatar">👤</div>
-                        <div class="request-info">
-                            <div class="request-name">Jackey Liu</div>
-                            <div class="request-meta">📅 April 4, 2026 · 12:00 PM · Court C · Advanced Techniques</div>
-                        </div>
-                        <div class="request-actions">
-                            <button class="btn-accept" onclick="handleRequest(this,'accept')">Accept</button>
-                            <button class="btn-decline" onclick="handleRequest(this,'decline')">Decline</button>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -241,43 +207,8 @@
                     <div class="card-title">Today's Schedule</div>
                     <a href="#" class="card-action">Full Calendar →</a>
                 </div>
-                <div class="card-body">
-                    <div class="schedule-item">
-                        <div class="schedule-time">
-                            <div class="schedule-time-val">9:00</div>
-                            <div class="schedule-time-ampm">AM</div>
-                        </div>
-                        <div class="schedule-line"></div>
-                        <div class="schedule-info">
-                            <div class="schedule-student">Sarah Wilson</div>
-                            <div class="schedule-detail">Advanced Techniques · 60 min</div>
-                            <div class="schedule-court">Court A</div>
-                        </div>
-                    </div>
-                    <div class="schedule-item">
-                        <div class="schedule-time">
-                            <div class="schedule-time-val">11:00</div>
-                            <div class="schedule-time-ampm">AM</div>
-                        </div>
-                        <div class="schedule-line"></div>
-                        <div class="schedule-info">
-                            <div class="schedule-student">Tom Rodriguez</div>
-                            <div class="schedule-detail">Competitive Training · 60 min</div>
-                            <div class="schedule-court">Court B</div>
-                        </div>
-                    </div>
-                    <div class="schedule-item">
-                        <div class="schedule-time">
-                            <div class="schedule-time-val">3:00</div>
-                            <div class="schedule-time-ampm">PM</div>
-                        </div>
-                        <div class="schedule-line"></div>
-                        <div class="schedule-info">
-                            <div class="schedule-student">Emma Park</div>
-                            <div class="schedule-detail">Beginner Session · 60 min</div>
-                            <div class="schedule-court">Court C</div>
-                        </div>
-                    </div>
+                <div class="card-body" id="scheduleList">
+                    <div style="text-align:center;padding:2rem;color:#8aab8c;font-size:0.85rem;">No sessions today.</div>
                 </div>
             </div>
 
@@ -400,44 +331,59 @@
             }
         }
 
-        async function loadRequests(coachId) {
-            try {
-                const res = await fetch('/api/orders');
-                const orders = await res.json();
+       async function loadRequests(coachId) {
+    try {
+        const res = await fetch('/api/orders');
+        const orders = await res.json();
 
-                const pendingOrders = orders.filter(o =>
-                    o.course && o.course.coach && o.course.coach.coachId == coachId
-                    && o.orderStatus === 'pending'
-                );
+        const coachOrders = orders.filter(o =>
+            o.course && o.course.coach && o.course.coach.coachId == coachId
+        );
 
-                const list = document.getElementById('requestsList');
+        const pendingOrders = coachOrders.filter(o => o.orderStatus === 'pending');
+        const confirmed = coachOrders.filter(o => o.orderStatus === 'confirmed');
+        const uniqueStudents = new Set(coachOrders.filter(o => o.user).map(o => o.user.userId));
 
-                if (pendingOrders.length === 0) {
-                    list.innerHTML = `<div style="text-align:center;padding:2rem;color:#8aab8c;font-size:0.85rem;">No pending requests.</div>`;
-                    return;
-                }
+        // 更新統計數字
+        document.getElementById('statStudents').textContent = uniqueStudents.size;
+        document.getElementById('statSessions').textContent = confirmed.length;
+        document.getElementById('statRevenue').textContent = '$' + (confirmed.length * 80).toLocaleString();
+        document.getElementById('todaySessions').textContent = confirmed.length + ' session' + (confirmed.length !== 1 ? 's' : '');
+        document.getElementById('coachWelcomeSub').textContent =
+            pendingOrders.length > 0
+                ? `You have ${pendingOrders.length} pending booking request${pendingOrders.length > 1 ? 's' : ''}.`
+                : 'No pending requests today.';
+        document.getElementById('pendingBadge').textContent = pendingOrders.length + ' Pending';
 
-                list.innerHTML = pendingOrders.map(o => `
-                    <div class="request-item" id="req-${o.orderId}">
-                        <div class="request-avatar">👤</div>
-                        <div class="request-info">
-                            <div class="request-name">${o.user ? o.user.firstName + ' ' + o.user.lastName : 'Unknown'}</div>
-                            <div class="request-meta">
-                                📅 ${o.orderTime ? new Date(o.orderTime).toLocaleString('en-US', {year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', hour12:true}) : 'N/A'}
-                                ${o.course ? ' · ' + o.course.courseName : ''}
-                                ${o.course && o.course.court ? ' · ' + o.course.court.courtName : ''}
-                            </div>
-                        </div>
-                        <div class="request-actions">
-                            <button class="btn-accept" onclick="handleRequest(${o.orderId},'confirmed')">Accept</button>
-                            <button class="btn-decline" onclick="handleRequest(${o.orderId},'declined')">Decline</button>
-                        </div>
-                    </div>
-                `).join('');
-            } catch(e) {
-                console.error('Failed to load requests', e);
-            }
+        const list = document.getElementById('requestsList');
+
+        if (pendingOrders.length === 0) {
+            list.innerHTML = `<div style="text-align:center;padding:2rem;color:#8aab8c;font-size:0.85rem;">No pending requests.</div>`;
+            return;
         }
+
+        list.innerHTML = pendingOrders.map(o => `
+            <div class="request-item" id="req-${o.orderId}">
+                <div class="request-avatar">👤</div>
+                <div class="request-info">
+                    <div class="request-name">${o.user ? o.user.firstName + ' ' + o.user.lastName : 'Unknown'}</div>
+                    <div class="request-meta">
+                        📅 ${o.orderTime ? new Date(o.orderTime).toLocaleString('en-US', {year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', hour12:true}) : 'N/A'}
+                        ${o.course ? ' · ' + o.course.courseName : ''}
+                        ${o.course && o.course.court ? ' · ' + o.course.court.courtName : ''}
+                    </div>
+                </div>
+                <div class="request-actions">
+                    <button class="btn-accept" onclick="handleRequest(${o.orderId},'confirmed')">Accept</button>
+                    <button class="btn-decline" onclick="handleRequest(${o.orderId},'declined')">Decline</button>
+                </div>
+            </div>
+        `).join('');
+
+    } catch(e) {
+        console.error('Failed to load requests', e);
+    }
+}
 
         async function handleRequest(orderId, status) {
             const item = document.getElementById(`req-${orderId}`);
