@@ -172,11 +172,13 @@
 <nav>
     <a href="index.html" class="nav-logo">Tennis<span>Connect</span></a>
     <ul class="nav-links">
-        <li><a href="#coaches">Coaches</a></li>
-        <li><a href="#how">How It Works</a></li>
-        <li><a href="login.html">Login</a></li>
+        <li><a href="#coaches" style="color:#fff !important;" >Coaches</a></li>
+        <li><a href="#how" style="color:#fff !important;">How It Works</a></li>
+        <li id="navLogin"><a href="login.html" style="color:#fff !important;">Login</a></li>
+        <li id="navDashboard" style="display:none;"><a href="dashboard.html" id="navDashboardLink" style="color:#fff !important;">Dashboard</a></li>
     </ul>
-    <a href="register.html" class="nav-btn">Get Started</a>
+    <a href="register.html" class="nav-btn" id="navGetStarted">Get Started</a>
+    <a href="#" onclick="logout()" class="nav-btn" id="navLogout" style="display:none;background:var(--green-accent);color:var(--green-mid);font-weight:600;">Sign Out</a>
 </nav>
 
 <!-- HERO -->
@@ -259,6 +261,7 @@
         <div class="feat-card"><div class="feat-num">04 —</div><div class="feat-title">Real-Time Availability</div><p class="feat-desc">See live availability for coaches and courts. No double bookings, no confusion — just easy scheduling.</p></div>
         <div class="feat-card"><div class="feat-num">05 —</div><div class="feat-title">Instant Confirmation</div><p class="feat-desc">Book your session and receive instant confirmation. Your coach is notified automatically.</p></div>
         <div class="feat-card"><div class="feat-num">06 —</div><div class="feat-title">Honest Reviews</div><p class="feat-desc">Leave reviews after each session. Help other players find the best coaches and courts on the platform.</p></div>
+    </div>
 </section>
 
 
@@ -294,27 +297,42 @@
 </footer>
 
 <script>
-    // Load coaches from API
-    fetch('/api/coaches')
-        .then(r => r.json())
-        .then(coaches => {
-            if (coaches.length === 0) return;
-            const grid = document.getElementById('coachGrid');
-            const icons = ['🎾','🏆','💪','⭐','🎯','🏅'];
-            grid.innerHTML = coaches.slice(0,3).map((c,i) => `
-                <div class="coach-card">
-                    <div class="coach-avatar">${icons[i % icons.length]}</div>
-                    <div class="coach-info">
-                        <div class="coach-name">${c.firstName} ${c.lastName}</div>
-                        <div class="coach-spec">${c.specialty || 'Tennis Coach'}</div>
-                        <div class="coach-meta">
-                            <span class="coach-exp">${c.experienceYears || 0} yrs exp.</span>
-                            <span class="coach-stars">★ 5.0</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }).catch(() => {});
+    async function checkAuth() {
+        try {
+            const res = await fetch('/api/auth/me');
+            const data = await res.json();
+
+            if (data.loggedIn) {
+                // 隱藏 Login 和 Get Started
+                document.getElementById('navLogin').style.display = 'none';
+                document.getElementById('navGetStarted').style.display = 'none';
+
+                // 顯示 Dashboard 和 Sign Out
+                document.getElementById('navDashboard').style.display = 'block';
+                document.getElementById('navLogout').style.display = 'inline-block';
+
+                // 根據角色設定 Dashboard 連結
+                const link = document.getElementById('navDashboardLink');
+                if (data.role === 'coach') {
+                    link.href = 'coach-dashboard.html';
+                    link.textContent = `${data.name.split(' ')[0]}'s Dashboard`;
+                } else {
+                    link.href = 'dashboard.html';
+                    link.textContent = `${data.name.split(' ')[0]}'s Dashboard`;
+                }
+            }
+        } catch(e) {
+            console.error('Auth check failed', e);
+        }
+    }
+
+    async function logout() {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        localStorage.clear();
+        window.location.href = 'index.html';
+    }
+
+    checkAuth();
 </script>
 </body>
 </html>
