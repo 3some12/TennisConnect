@@ -222,15 +222,15 @@
                 <div class="profile-spec" id="coachSpecialty">Tennis Coach</div>
                 <div class="profile-stats">
                     <div style="text-align:center;">
-                        <div class="profile-stat-num">12</div>
+                        <div class="profile-stat-num" id="profileYears">—</div>
                         <div class="profile-stat-label">Years</div>
                     </div>
                     <div style="text-align:center;">
-                        <div class="profile-stat-num">4.9★</div>
+                        <div class="profile-stat-num" id="profileRating">—</div>
                         <div class="profile-stat-label">Rating</div>
                     </div>
                     <div style="text-align:center;">
-                        <div class="profile-stat-num">47</div>
+                        <div class="profile-stat-num" id="profileReviews">0</div>
                         <div class="profile-stat-label">Reviews</div>
                     </div>
                 </div>
@@ -323,6 +323,9 @@
                 document.getElementById('coachSidebarName').textContent = name;
                 document.getElementById('coachName').textContent = name;
                 document.getElementById('coachSpecialty').textContent = coachData.specialty || 'Tennis Coach';
+                document.getElementById('profileYears').textContent = coachData.experienceYears || '—';
+                document.getElementById('profileRating').textContent = '—';
+                document.getElementById('profileReviews').textContent = '0';
 
                 loadRequests(data.id);
             } catch(e) {
