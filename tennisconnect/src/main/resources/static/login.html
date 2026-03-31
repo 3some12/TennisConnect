@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TennisConnect — Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --green-dark: #0A1F0C;
+            --green-mid: #112A14;
+            --green-light: #EFF5EE;
+            --green-accent: #4CAF72;
+            --gold: #C8A951;
+        }
+        body {
+            min-height: 100vh; display: flex;
+            font-family: 'Outfit', sans-serif;
+            background: var(--green-mid);
+        }
+
+        /* LEFT PANEL */
+        .left {
+            width: 55%; background: var(--green-mid);
+            display: flex; flex-direction: column;
+            justify-content: center; padding: 4rem;
+            position: relative; overflow: hidden;
+        }
+        .left-grid {
+            position: absolute; inset: 0;
+            background-image: linear-gradient(rgba(76,175,114,0.06) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(76,175,114,0.06) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        .left-deco {
+            position: absolute; right: -60px; bottom: -60px;
+            width: 300px; height: 300px;
+            border: 1px solid rgba(76,175,114,0.1); border-radius: 50%;
+        }
+        .left-deco::before {
+            content: ''; position: absolute; inset: 30px;
+            border: 1px solid rgba(200,169,81,0.1); border-radius: 50%;
+        }
+        .left-content { position: relative; }
+        .left-logo {
+            font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 600;
+            letter-spacing: 4px; color: #fff; text-decoration: none; margin-bottom: 4rem; display: block;
+        }
+        .left-logo span { color: var(--green-accent); }
+        .left-tag {
+            font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase;
+            color: var(--gold); margin-bottom: 1rem;
+            display: flex; align-items: center; gap: 0.6rem;
+        }
+        .left-tag::before { content: ''; width: 20px; height: 1px; background: var(--gold); }
+        .left-title {
+            font-family: 'Cinzel', serif; font-size: 2.5rem; font-weight: 700;
+            color: #fff; line-height: 1.2; margin-bottom: 1rem;
+        }
+        .left-title span { color: var(--green-accent); }
+        .left-desc {
+            font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+            color: rgba(255,255,255,0.4); line-height: 1.8; max-width: 380px; margin-bottom: 3rem;
+        }
+        .features-list { display: flex; flex-direction: column; gap: 1rem; }
+        .feature-item { display: flex; align-items: center; gap: 0.8rem; }
+        .feature-dot { width: 6px; height: 6px; background: var(--green-accent); border-radius: 50%; flex-shrink: 0; }
+        .feature-text { font-size: 0.82rem; color: rgba(255,255,255,0.5); }
+
+        /* RIGHT PANEL */
+        .right {
+            width: 45%; background: var(--green-light);
+            display: flex; align-items: center; justify-content: center;
+            padding: 3rem;
+        }
+        .form-box { width: 100%; max-width: 400px; }
+        .form-title {
+            font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 700;
+            color: #0F2D12; margin-bottom: 0.4rem; letter-spacing: 1px;
+        }
+        .form-subtitle { font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: #4A6B4D; margin-bottom: 2rem; }
+
+        /* TABS */
+        .tabs { display: flex; margin-bottom: 2rem; border-bottom: 2px solid #d4e6d0; }
+        .tab {
+            flex: 1; padding: 0.7rem; text-align: center;
+            font-size: 0.72rem; letter-spacing: 1.5px; text-transform: uppercase;
+            cursor: pointer; border: none; background: none;
+            color: #4A6B4D; font-family: 'Outfit', sans-serif;
+            border-bottom: 2px solid transparent; margin-bottom: -2px;
+            transition: all 0.3s;
+        }
+        .tab.active { color: #0F2D12; border-bottom-color: var(--green-accent); font-weight: 600; }
+
+        /* FORM */
+        .form { display: none; flex-direction: column; gap: 1rem; }
+        .form.active { display: flex; }
+        .input-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        label { font-size: 0.72rem; letter-spacing: 1px; text-transform: uppercase; color: #4A6B4D; font-weight: 500; }
+        input {
+            padding: 0.75rem 1rem; border: 1px solid #d4e6d0;
+            background: #fff; font-family: 'Outfit', sans-serif; font-size: 0.88rem;
+            color: #0F2D12; outline: none; transition: border-color 0.3s;
+        }
+        input:focus { border-color: var(--green-accent); }
+        input::placeholder { color: #aac8ad; }
+
+        .forgot { text-align: right; margin-top: -0.5rem; }
+        .forgot a { font-size: 0.75rem; color: var(--gold); text-decoration: none; }
+
+        .submit-btn {
+            background: var(--green-mid); color: #fff;
+            padding: 0.85rem; border: none; cursor: pointer;
+            font-family: 'Outfit', sans-serif; font-size: 0.75rem;
+            font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+            transition: background 0.3s; margin-top: 0.5rem;
+        }
+        .submit-btn:hover { background: #1A4520; }
+
+        .divider { display: flex; align-items: center; gap: 1rem; margin: 0.5rem 0; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #d4e6d0; }
+        .divider span { font-size: 0.72rem; color: #8aab8c; }
+
+        .switch-text {
+            text-align: center; font-size: 0.8rem; color: #4A6B4D; margin-top: 0.5rem;
+        }
+        .switch-text a { color: var(--green-accent); text-decoration: none; font-weight: 500; }
+
+        .back-home {
+            display: flex; align-items: center; gap: 0.4rem;
+            font-size: 0.72rem; color: rgba(255,255,255,0.35);
+            text-decoration: none; margin-top: 3rem;
+            transition: color 0.3s;
+        }
+        .back-home:hover { color: var(--green-accent); }
+
+        /* ERROR / SUCCESS */
+        .msg { padding: 0.7rem 1rem; font-size: 0.78rem; border-radius: 2px; display: none; }
+        .msg.error { background: #fee; color: #c44; border: 1px solid #fcc; display: block; }
+        .msg.success { background: #efe; color: #2a6; border: 1px solid #cfc; display: block; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .left { display: none; }
+            .right { width: 100%; padding: 2rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LEFT -->
+<div class="left">
+    <div class="left-grid"></div>
+    <div class="left-deco"></div>
+    <div class="left-content">
+        <a href="index.html" class="left-logo">Tennis<span>Connect</span></a>
+        <div class="left-tag">Welcome Back</div>
+        <h1 class="left-title">Your Game<br><span>Starts Here</span></h1>
+        <p class="left-desc">Sign in to access your bookings, connect with coaches, and continue your tennis journey.</p>
+        <div class="features-list">
+            <div class="feature-item"><div class="feature-dot"></div><div class="feature-text">Access your upcoming sessions</div></div>
+            <div class="feature-item"><div class="feature-dot"></div><div class="feature-text">Message your coaches directly</div></div>
+            <div class="feature-item"><div class="feature-dot"></div><div class="feature-text">Track your progress and reviews</div></div>
+            <div class="feature-item"><div class="feature-dot"></div><div class="feature-text">Book new sessions instantly</div></div>
+        </div>
+        <a href="index.html" class="back-home">← Back to Home</a>
+    </div>
+</div>
+
+<!-- RIGHT -->
+<div class="right">
+    <div class="form-box">
+        <div class="form-title">Welcome Back</div>
+        <div class="form-subtitle">Sign in to your TennisConnect account</div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('user')">Member</button>
+            <button class="tab" onclick="switchTab('coach')">Coach</button>
+        </div>
+
+        <!-- USER LOGIN -->
+        <form class="form active" id="userForm" onsubmit="handleLogin(event, 'user')">
+            <div class="msg" id="userMsg"></div>
+            <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" id="userEmail" placeholder="your@email.com" required>
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="userPass" placeholder="••••••••" required>
+            </div>
+            <div class="forgot"><a href="#">Forgot password?</a></div>
+            <button type="submit" class="submit-btn">Sign In as Member</button>
+            <div class="switch-text">
+                Don't have an account? <a href="register.html">Create one →</a>
+            </div>
+        </form>
+
+        <!-- COACH LOGIN -->
+        <form class="form" id="coachForm" onsubmit="handleLogin(event, 'coach')">
+            <div class="msg" id="coachMsg"></div>
+            <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" id="coachEmail" placeholder="coach@email.com" required>
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="coachPass" placeholder="••••••••" required>
+            </div>
+            <div class="forgot"><a href="#">Forgot password?</a></div>
+            <button type="submit" class="submit-btn">Sign In as Coach</button>
+            <div class="switch-text">
+                New coach? <a href="register.html">Register here →</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function switchTab(type) {
+        document.querySelectorAll('.tab').forEach((t, i) => {
+            t.classList.toggle('active', (i === 0 && type === 'user') || (i === 1 && type === 'coach'));
+        });
+        document.getElementById('userForm').classList.toggle('active', type === 'user');
+        document.getElementById('coachForm').classList.toggle('active', type === 'coach');
+    }
+
+    function handleLogin(e, type) {
+        e.preventDefault();
+        const email    = document.getElementById(type === 'user' ? 'userEmail' : 'coachEmail').value;
+        const password = document.getElementById(type === 'user' ? 'userPass'  : 'coachPass').value;
+        const msgEl    = document.getElementById(type === 'user' ? 'userMsg'   : 'coachMsg');
+        const endpoint = type === 'user' ? '/api/auth/login/user' : '/api/auth/login/coach';
+
+        fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                localStorage.setItem('userName', data.name);
+                localStorage.setItem('userRole', data.role);
+                localStorage.setItem('userId', data.id);
+                msgEl.className = 'msg success';
+                msgEl.textContent = '✓ Login successful! Redirecting...';
+                setTimeout(() => {
+                    if (data.role === 'coach') {
+                        window.location.href = 'coach-dashboard.html';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
+                }, 1000);
+            } else {
+                msgEl.className = 'msg error';
+                msgEl.textContent = data.message || 'Invalid email or password. Please try again.';
+            }
+        })
+        .catch(() => {
+            msgEl.className = 'msg error';
+            msgEl.textContent = 'Connection error. Please check if the server is running.';
+        });
+    }
+</script>
+</body>
+</html>

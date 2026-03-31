@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TennisConnect — Coach Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --green-dark: #0A1F0C;
+            --green-mid: #112A14;
+            --green-light: #EFF5EE;
+            --green-accent: #4CAF72;
+            --gold: #C8A951;
+        }
+        body { background: var(--green-light); font-family: 'Outfit', sans-serif; display: flex; min-height: 100vh; }
+
+        .sidebar { width: 240px; background: var(--green-mid); min-height: 100vh; display: flex; flex-direction: column; position: fixed; left: 0; top: 0; bottom: 0; border-right: 1px solid rgba(76,175,114,0.15); }
+        .sidebar-logo { padding: 1.8rem 1.5rem; border-bottom: 1px solid rgba(76,175,114,0.1); }
+        .sidebar-logo a { font-family: 'Cinzel', serif; color: #fff; font-size: 0.95rem; font-weight: 600; letter-spacing: 3px; text-decoration: none; }
+        .sidebar-logo a span { color: var(--green-accent); }
+        .sidebar-user { padding: 1.5rem; border-bottom: 1px solid rgba(76,175,114,0.1); display: flex; align-items: center; gap: 0.8rem; }
+        .user-avatar { width: 40px; height: 40px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 700; color: var(--green-mid); flex-shrink: 0; }
+        .user-name { font-size: 0.82rem; font-weight: 500; color: #fff; }
+        .user-role { font-size: 0.65rem; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; }
+        .sidebar-nav { flex: 1; padding: 1rem 0; }
+        .nav-section { font-size: 0.58rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 0.8rem 1.5rem 0.4rem; }
+        .nav-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.65rem 1.5rem; color: rgba(255,255,255,0.45); font-size: 0.82rem; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+        .nav-item:hover { background: rgba(76,175,114,0.08); color: #fff; }
+        .nav-item.active { background: rgba(76,175,114,0.12); color: #fff; border-right: 2px solid var(--green-accent); }
+        .nav-item-icon { font-size: 1rem; width: 20px; text-align: center; }
+        .nav-badge { margin-left: auto; background: var(--gold); color: var(--green-dark); font-size: 0.6rem; font-weight: 700; padding: 0.1rem 0.5rem; border-radius: 10px; }
+        .sidebar-footer { padding: 1.2rem 1.5rem; border-top: 1px solid rgba(76,175,114,0.1); }
+        .logout-btn { display: flex; align-items: center; gap: 0.8rem; color: rgba(255,255,255,0.3); font-size: 0.78rem; cursor: pointer; text-decoration: none; transition: color 0.3s; }
+        .logout-btn:hover { color: #ff6b6b; }
+
+        .main { margin-left: 240px; flex: 1; padding: 2.5rem; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .page-title { font-family: 'Cinzel', serif; font-size: 1.4rem; font-weight: 700; color: #0F2D12; letter-spacing: 1px; }
+        .btn-gold { background: var(--gold); color: var(--green-dark); padding: 0.55rem 1.3rem; border: none; font-family: 'Outfit', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; text-decoration: none; display: inline-block; transition: background 0.3s; }
+        .btn-outline { background: transparent; color: #0F2D12; padding: 0.55rem 1.3rem; border: 1px solid #d4e6d0; font-family: 'Outfit', sans-serif; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; }
+
+        .welcome-banner { background: var(--green-mid); padding: 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
+        .welcome-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(76,175,114,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(76,175,114,0.06) 1px, transparent 1px); background-size: 20px 20px; }
+        .welcome-text { position: relative; }
+        .welcome-greeting { font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 0.4rem; }
+        .welcome-name { font-family: 'Cinzel', serif; font-size: 1.3rem; font-weight: 700; color: #fff; }
+        .welcome-sub { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-top: 0.2rem; }
+        .welcome-badge { position: relative; background: rgba(76,175,114,0.15); border: 1px solid rgba(76,175,114,0.3); padding: 0.5rem 1rem; }
+        .welcome-badge-text { font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; color: var(--green-accent); }
+        .welcome-badge-val { font-family: 'Cinzel', serif; font-size: 1.2rem; color: #fff; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: #fff; padding: 1.3rem; border: 1px solid #d4e6d0; position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; }
+        .stat-card.green::before { background: var(--green-accent); }
+        .stat-card.gold::before { background: var(--gold); }
+        .stat-card.blue::before { background: #4A9FCA; }
+        .stat-card.purple::before { background: #9A4ACA; }
+        .stat-label { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: #4A6B4D; margin-bottom: 0.5rem; }
+        .stat-value { font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 700; color: #0F2D12; line-height: 1; margin-bottom: 0.3rem; }
+        .stat-sub { font-size: 0.72rem; color: #8aab8c; }
+
+        .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .card { background: #fff; border: 1px solid #d4e6d0; }
+        .card-header { padding: 1rem 1.3rem; border-bottom: 1px solid #d4e6d0; display: flex; justify-content: space-between; align-items: center; }
+        .card-title { font-family: 'Cinzel', serif; font-size: 0.88rem; font-weight: 600; color: #0F2D12; }
+        .card-action { font-size: 0.7rem; color: var(--green-accent); cursor: pointer; text-decoration: none; }
+        .card-body { padding: 1rem 1.3rem; }
+
+        .request-item { display: flex; align-items: center; gap: 1rem; padding: 0.9rem 0; border-bottom: 1px solid #f0f8ee; }
+        .request-item:last-child { border-bottom: none; }
+        .request-avatar { width: 38px; height: 38px; background: var(--green-light); border: 1px solid #d4e6d0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+        .request-info { flex: 1; }
+        .request-name { font-size: 0.85rem; font-weight: 500; color: #0F2D12; margin-bottom: 0.15rem; }
+        .request-meta { font-size: 0.72rem; color: #4A6B4D; }
+        .request-actions { display: flex; gap: 0.5rem; }
+        .btn-accept { background: var(--green-accent); color: #fff; border: none; padding: 0.35rem 0.8rem; font-size: 0.65rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; font-family: 'Outfit', sans-serif; }
+        .btn-decline { background: transparent; color: #4A6B4D; border: 1px solid #d4e6d0; padding: 0.35rem 0.8rem; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; font-family: 'Outfit', sans-serif; }
+        .btn-decline:hover { border-color: #ff6b6b; color: #ff6b6b; }
+
+        .schedule-item { display: flex; gap: 1rem; padding: 0.8rem 0; border-bottom: 1px solid #f0f8ee; align-items: center; }
+        .schedule-item:last-child { border-bottom: none; }
+        .schedule-time { text-align: center; min-width: 50px; }
+        .schedule-time-val { font-family: 'Cinzel', serif; font-size: 0.85rem; color: #0F2D12; font-weight: 600; }
+        .schedule-time-ampm { font-size: 0.62rem; color: #4A6B4D; text-transform: uppercase; }
+        .schedule-line { width: 2px; background: var(--green-accent); border-radius: 1px; align-self: stretch; min-height: 40px; flex-shrink: 0; }
+        .schedule-info { flex: 1; }
+        .schedule-student { font-size: 0.82rem; font-weight: 500; color: #0F2D12; margin-bottom: 0.15rem; }
+        .schedule-detail { font-size: 0.72rem; color: #4A6B4D; }
+        .schedule-court { font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); margin-top: 0.15rem; }
+
+        .avail-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .avail-day { text-align: center; }
+        .avail-day-label { font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase; color: #4A6B4D; margin-bottom: 0.3rem; }
+        .avail-slot { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 0.58rem; cursor: pointer; transition: all 0.2s; border: 1px solid #d4e6d0; }
+        .avail-slot.available { background: #f0f8f0; color: var(--green-accent); }
+        .avail-slot.available:hover { background: var(--green-accent); color: #fff; }
+        .avail-slot.booked { background: var(--green-mid); color: rgba(255,255,255,0.6); cursor: default; }
+        .avail-slot.off { background: #f5f5f5; color: #ccc; cursor: default; }
+
+        .profile-card { background: var(--green-mid); padding: 1.5rem; margin-bottom: 1rem; }
+        .profile-avatar { width: 60px; height: 60px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 700; color: var(--green-mid); margin-bottom: 1rem; }
+        .profile-name { font-family: 'Cinzel', serif; font-size: 1rem; color: #fff; margin-bottom: 0.2rem; }
+        .profile-spec { font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+        .profile-stats { display: flex; gap: 1rem; }
+        .profile-stat-num { font-family: 'Cinzel', serif; font-size: 1.1rem; color: var(--green-accent); }
+        .profile-stat-label { font-size: 0.6rem; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1px; }
+        .edit-profile-btn { width: 100%; margin-top: 1rem; padding: 0.6rem; background: transparent; border: 1px solid rgba(76,175,114,0.3); color: var(--green-accent); font-family: 'Outfit', sans-serif; font-size: 0.68rem; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; }
+
+        @media (max-width: 900px) {
+            .sidebar { display: none; }
+            .main { margin-left: 0; padding: 1.5rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .content-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-logo"><a href="index.html">Tennis<span>Connect</span></a></div>
+    <div class="sidebar-user">
+        <div class="user-avatar" id="coachSidebarInitials">...</div>
+        <div>
+            <div class="user-name" id="coachSidebarName">Loading...</div>
+            <div class="user-role">Coach</div>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">Main</div>
+        <a href="#" class="nav-item active"><span class="nav-item-icon">📊</span> Dashboard</a>
+        <a href="#" class="nav-item"><span class="nav-item-icon">📅</span> My Schedule <span class="nav-badge">3</span></a>
+        <a href="#" class="nav-item"><span class="nav-item-icon">🔔</span> Requests <span class="nav-badge">3</span></a>
+        <a href="#" class="nav-item"><span class="nav-item-icon">🏟️</span> My Courts</a>
+        <a href="#" class="nav-item"><span class="nav-item-icon">⭐</span> Reviews</a>
+        <div class="nav-section">Account</div>
+        <a href="#" class="nav-item"><span class="nav-item-icon">👤</span> Profile</a>
+        <a href="#" class="nav-item"><span class="nav-item-icon">⚙️</span> Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="#" onclick="logout()" class="logout-btn"><span>🚪</span> Sign Out</a>
+    </div>
+</aside>
+
+<main class="main">
+
+    <div class="topbar">
+        <div class="page-title">Coach Dashboard</div>
+        <div style="display:flex;gap:0.8rem;">
+            <button class="btn-outline">Set Availability</button>
+            <a href="#" class="btn-gold">Add New Course</a>
+        </div>
+    </div>
+
+    <div class="welcome-banner">
+        <div class="welcome-grid"></div>
+        <div class="welcome-text">
+            <div class="welcome-greeting">Coach Portal</div>
+            <div class="welcome-name" id="coachWelcome">Loading...</div>
+            <div class="welcome-sub">You have 3 pending booking requests today.</div>
+        </div>
+        <div class="welcome-badge">
+            <div class="welcome-badge-text">Today's Sessions</div>
+            <div class="welcome-badge-val">3 sessions</div>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card green">
+            <div class="stat-label">Total Students</div>
+            <div class="stat-value">24</div>
+            <div class="stat-sub">Active this month</div>
+        </div>
+        <div class="stat-card gold">
+            <div class="stat-label">Sessions This Month</div>
+            <div class="stat-value">18</div>
+            <div class="stat-sub">↑ 3 from last month</div>
+        </div>
+        <div class="stat-card blue">
+            <div class="stat-label">Avg Rating</div>
+            <div class="stat-value">4.9</div>
+            <div class="stat-sub">From 47 reviews</div>
+        </div>
+        <div class="stat-card purple">
+            <div class="stat-label">Revenue</div>
+            <div class="stat-value">$1,440</div>
+            <div class="stat-sub">This month</div>
+        </div>
+    </div>
+
+    <div class="content-grid">
+
+        <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Pending Requests</div>
+                    <span style="background:#fff8e0;color:#a07828;border:1px solid #f0dfa0;font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;padding:0.2rem 0.6rem;">3 Pending</span>
+                </div>
+                <div class="card-body" id="requestsList">
+                    <div class="request-item">
+                        <div class="request-avatar">👤</div>
+                        <div class="request-info">
+                            <div class="request-name">Charity Wang</div>
+                            <div class="request-meta">📅 April 2, 2026 · 10:00 AM · Court A · Advanced Techniques</div>
+                        </div>
+                        <div class="request-actions">
+                            <button class="btn-accept" onclick="handleRequest(this,'accept')">Accept</button>
+                            <button class="btn-decline" onclick="handleRequest(this,'decline')">Decline</button>
+                        </div>
+                    </div>
+                    <div class="request-item">
+                        <div class="request-avatar">👤</div>
+                        <div class="request-info">
+                            <div class="request-name">Antonia Bondar</div>
+                            <div class="request-meta">📅 April 3, 2026 · 2:00 PM · Court B · Competitive Training</div>
+                        </div>
+                        <div class="request-actions">
+                            <button class="btn-accept" onclick="handleRequest(this,'accept')">Accept</button>
+                            <button class="btn-decline" onclick="handleRequest(this,'decline')">Decline</button>
+                        </div>
+                    </div>
+                    <div class="request-item">
+                        <div class="request-avatar">👤</div>
+                        <div class="request-info">
+                            <div class="request-name">Jackey Liu</div>
+                            <div class="request-meta">📅 April 4, 2026 · 12:00 PM · Court C · Advanced Techniques</div>
+                        </div>
+                        <div class="request-actions">
+                            <button class="btn-accept" onclick="handleRequest(this,'accept')">Accept</button>
+                            <button class="btn-decline" onclick="handleRequest(this,'decline')">Decline</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Today's Schedule</div>
+                    <a href="#" class="card-action">Full Calendar →</a>
+                </div>
+                <div class="card-body">
+                    <div class="schedule-item">
+                        <div class="schedule-time">
+                            <div class="schedule-time-val">9:00</div>
+                            <div class="schedule-time-ampm">AM</div>
+                        </div>
+                        <div class="schedule-line"></div>
+                        <div class="schedule-info">
+                            <div class="schedule-student">Sarah Wilson</div>
+                            <div class="schedule-detail">Advanced Techniques · 60 min</div>
+                            <div class="schedule-court">Court A</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <div class="schedule-time">
+                            <div class="schedule-time-val">11:00</div>
+                            <div class="schedule-time-ampm">AM</div>
+                        </div>
+                        <div class="schedule-line"></div>
+                        <div class="schedule-info">
+                            <div class="schedule-student">Tom Rodriguez</div>
+                            <div class="schedule-detail">Competitive Training · 60 min</div>
+                            <div class="schedule-court">Court B</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <div class="schedule-time">
+                            <div class="schedule-time-val">3:00</div>
+                            <div class="schedule-time-ampm">PM</div>
+                        </div>
+                        <div class="schedule-line"></div>
+                        <div class="schedule-info">
+                            <div class="schedule-student">Emma Park</div>
+                            <div class="schedule-detail">Beginner Session · 60 min</div>
+                            <div class="schedule-court">Court C</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+            <div class="profile-card">
+                <div class="profile-avatar" id="coachInitials">...</div>
+                <div class="profile-name" id="coachName">Loading...</div>
+                <div class="profile-spec" id="coachSpecialty">Tennis Coach</div>
+                <div class="profile-stats">
+                    <div style="text-align:center;">
+                        <div class="profile-stat-num">12</div>
+                        <div class="profile-stat-label">Years</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div class="profile-stat-num">4.9★</div>
+                        <div class="profile-stat-label">Rating</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div class="profile-stat-num">47</div>
+                        <div class="profile-stat-label">Reviews</div>
+                    </div>
+                </div>
+                <button class="edit-profile-btn">Edit Profile</button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">This Week</div>
+                    <a href="#" class="card-action">Edit →</a>
+                </div>
+                <div class="card-body">
+                    <div class="avail-grid">
+                        <div class="avail-day">
+                            <div class="avail-day-label">Mon</div>
+                            <div class="avail-slot available">09</div>
+                            <div class="avail-slot available">11</div>
+                            <div class="avail-slot available">14</div>
+                        </div>
+                        <div class="avail-day">
+                            <div class="avail-day-label">Tue</div>
+                            <div class="avail-slot available">09</div>
+                            <div class="avail-slot available">11</div>
+                            <div class="avail-slot available">14</div>
+                        </div>
+                        <div class="avail-day">
+                            <div class="avail-day-label">Wed</div>
+                            <div class="avail-slot available">09</div>
+                            <div class="avail-slot available">11</div>
+                            <div class="avail-slot available">14</div>
+                        </div>
+                        <div class="avail-day">
+                            <div class="avail-day-label">Thu</div>
+                            <div class="avail-slot available">09</div>
+                            <div class="avail-slot available">11</div>
+                            <div class="avail-slot available">14</div>
+                        </div>
+                        <div class="avail-day">
+                            <div class="avail-day-label">Fri</div>
+                            <div class="avail-slot available">09</div>
+                            <div class="avail-slot available">11</div>
+                            <div class="avail-slot available">14</div>
+                        </div>
+                        <div class="avail-day">
+                            <div class="avail-day-label">Sat</div>
+                            <div class="avail-slot available">09</div>
+                            <div class="avail-slot off">11</div>
+                            <div class="avail-slot off">14</div>
+                        </div>
+                        <div class="avail-day">
+                            <div class="avail-day-label">Sun</div>
+                            <div class="avail-slot off">09</div>
+                            <div class="avail-slot off">11</div>
+                            <div class="avail-slot off">14</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:1rem;margin-top:0.8rem;font-size:0.65rem;color:#4A6B4D;">
+                        <span>🟢 Available</span>
+                        <span style="color:var(--green-mid);">⬛ Booked</span>
+                        <span style="color:#ccc;">⬜ Off</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        async function init() {
+            try {
+                const res = await fetch('/api/auth/me');
+                const data = await res.json();
+
+                if (!data.loggedIn || data.role !== 'coach') {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const name = data.name;
+                const initials = name.split(' ').map(n => n[0]).join('');
+
+                // 載入教練真實資料
+                const coachRes = await fetch(`/api/coaches/${data.id}`);
+                const coachData = await coachRes.json();
+
+                document.getElementById('coachWelcome').textContent = `Good morning, ${name.split(' ')[0]}! 🎾`;
+                document.getElementById('coachInitials').textContent = initials;
+                document.getElementById('coachSidebarInitials').textContent = initials;
+                document.getElementById('coachSidebarName').textContent = name;
+                document.getElementById('coachName').textContent = name;
+                document.getElementById('coachSpecialty').textContent = coachData.specialty || 'Tennis Coach';
+
+                loadRequests(data.id);
+            } catch(e) {
+                console.error('Coach dashboard error', e);
+                window.location.href = 'login.html';
+            }
+        }
+
+        async function loadRequests(coachId) {
+            try {
+                const res = await fetch('/api/orders');
+                const orders = await res.json();
+
+                const pendingOrders = orders.filter(o =>
+                    o.course && o.course.coach && o.course.coach.coachId == coachId
+                    && o.orderStatus === 'pending'
+                );
+
+                const list = document.getElementById('requestsList');
+
+                if (pendingOrders.length === 0) {
+                    list.innerHTML = `<div style="text-align:center;padding:2rem;color:#8aab8c;font-size:0.85rem;">No pending requests.</div>`;
+                    return;
+                }
+
+                list.innerHTML = pendingOrders.map(o => `
+                    <div class="request-item" id="req-${o.orderId}">
+                        <div class="request-avatar">👤</div>
+                        <div class="request-info">
+                            <div class="request-name">${o.user ? o.user.firstName + ' ' + o.user.lastName : 'Unknown'}</div>
+                            <div class="request-meta">
+                                📅 ${o.orderTime ? new Date(o.orderTime).toLocaleString('en-US', {year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', hour12:true}) : 'N/A'}
+                                ${o.course ? ' · ' + o.course.courseName : ''}
+                                ${o.course && o.course.court ? ' · ' + o.course.court.courtName : ''}
+                            </div>
+                        </div>
+                        <div class="request-actions">
+                            <button class="btn-accept" onclick="handleRequest(${o.orderId},'confirmed')">Accept</button>
+                            <button class="btn-decline" onclick="handleRequest(${o.orderId},'declined')">Decline</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch(e) {
+                console.error('Failed to load requests', e);
+            }
+        }
+
+        async function handleRequest(orderId, status) {
+            const item = document.getElementById(`req-${orderId}`);
+            try {
+                await fetch(`/api/orders/${orderId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ orderStatus: status })
+                });
+                if (status === 'confirmed') {
+                    item.style.background = '#f0f8f0';
+                    item.querySelector('.request-actions').innerHTML =
+                        '<span style="font-size:0.72rem;color:#2a6;font-weight:600;letter-spacing:1px;">✓ Accepted</span>';
+                } else {
+                    item.style.opacity = '0.4';
+                    item.querySelector('.request-actions').innerHTML =
+                        '<span style="font-size:0.72rem;color:#c44;font-weight:600;letter-spacing:1px;">✗ Declined</span>';
+                }
+            } catch(e) {
+                console.error('Failed to update order', e);
+            }
+        }
+
+        async function logout() {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        init();
+    </script>
+</main>
+</body>
+</html>

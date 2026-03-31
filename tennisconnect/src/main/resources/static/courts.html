@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TennisConnect — Courts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --green-dark: #0A1F0C;
+            --green-mid: #112A14;
+            --green-card: #1A3A1E;
+            --green-light: #EFF5EE;
+            --green-accent: #4CAF72;
+            --gold: #C8A951;
+        }
+        body { background: var(--green-light); font-family: 'Outfit', sans-serif; }
+
+        /* NAV */
+        nav { background: var(--green-mid); padding: 1rem 4rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(76,175,114,0.15); position: sticky; top: 0; z-index: 100; }
+        .nav-logo { font-family: 'Cinzel', serif; color: #fff; font-size: 1rem; font-weight: 600; letter-spacing: 4px; text-decoration: none; }
+        .nav-logo span { color: var(--green-accent); }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.45); text-decoration: none; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--green-accent); }
+        .nav-btn { background: var(--green-accent); color: var(--green-mid); padding: 0.45rem 1.3rem; font-size: 0.65rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; border: none; cursor: pointer; text-decoration: none; }
+
+        /* HERO */
+        .page-hero { background: var(--green-mid); padding: 3rem 4rem; position: relative; overflow: hidden; }
+        .page-hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(76,175,114,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(76,175,114,0.06) 1px, transparent 1px); background-size: 30px 30px; }
+        .page-hero-content { position: relative; }
+        .page-tag { font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.6rem; }
+        .page-tag::before { content: ''; width: 20px; height: 1px; background: var(--gold); }
+        .page-title { font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 700; color: #fff; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .page-desc { font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: rgba(255,255,255,0.45); }
+
+        /* FILTER BAR */
+        .filter-bar { background: #fff; padding: 1.2rem 4rem; border-bottom: 1px solid #d4e6d0; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+        .search-wrap { flex: 1; min-width: 200px; position: relative; }
+        .search-wrap::before { content: '🔍'; position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); font-size: 0.85rem; }
+        .search-input { width: 100%; padding: 0.65rem 1rem 0.65rem 2.2rem; border: 1px solid #d4e6d0; font-family: 'Outfit', sans-serif; font-size: 0.85rem; color: #0F2D12; outline: none; transition: border-color 0.3s; }
+        .search-input:focus { border-color: var(--green-accent); }
+        .filter-select { padding: 0.65rem 1rem; border: 1px solid #d4e6d0; font-family: 'Outfit', sans-serif; font-size: 0.82rem; color: #4A6B4D; outline: none; background: #fff; cursor: pointer; min-width: 150px; }
+
+        /* MAIN */
+        .main { padding: 2.5rem 4rem; }
+        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .results-count { font-family: 'Cinzel', serif; font-size: 0.9rem; color: #0F2D12; }
+        .results-count span { color: var(--green-accent); }
+
+        /* COURTS GRID */
+        .courts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .court-card { background: #fff; border: 1px solid #d4e6d0; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; }
+        .court-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(15,45,18,0.1); }
+
+        /* COURT IMAGE AREA */
+        .court-img { height: 180px; background: var(--green-mid); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .court-img-bg { position: absolute; inset: 0; background-image: linear-gradient(rgba(76,175,114,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(76,175,114,0.08) 1px, transparent 1px); background-size: 20px 20px; }
+        .court-img-lines { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0.15; }
+        .court-field { width: 120px; height: 80px; border: 2px solid #fff; position: relative; }
+        .court-field::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: #fff; transform: translateX(-50%); }
+        .court-field::after { content: ''; position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%); }
+        .court-surface-badge { position: absolute; top: 1rem; left: 1rem; font-size: 0.6rem; letter-spacing: 1.5px; text-transform: uppercase; padding: 0.25rem 0.7rem; font-weight: 600; z-index: 1; }
+        .surface-hard { background: rgba(74,159,202,0.9); color: #fff; }
+        .surface-clay { background: rgba(180,100,50,0.9); color: #fff; }
+        .surface-grass { background: rgba(76,175,114,0.9); color: #fff; }
+        .surface-indoor { background: rgba(200,169,81,0.9); color: #0F2D12; }
+        .court-status-badge { position: absolute; top: 1rem; right: 1rem; font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase; padding: 0.25rem 0.7rem; font-weight: 600; z-index: 1; }
+        .status-available { background: rgba(76,175,114,0.9); color: #fff; }
+        .status-busy { background: rgba(202,74,74,0.9); color: #fff; }
+        .court-number { font-family: 'Cinzel', serif; font-size: 3rem; font-weight: 700; color: rgba(255,255,255,0.15); position: relative; z-index: 0; }
+
+        /* COURT INFO */
+        .court-info { padding: 1.3rem; }
+        .court-name { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 600; color: #0F2D12; margin-bottom: 0.2rem; }
+        .court-location { color: #4A6B4D; font-size: 0.78rem; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.3rem; }
+        .court-features { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+        .feature-tag { font-size: 0.62rem; letter-spacing: 1px; text-transform: uppercase; padding: 0.2rem 0.6rem; background: #f0f8ee; color: #2A6B33; border: 1px solid #d4e6d0; }
+        .court-divider { height: 1px; background: #d4e6d0; margin-bottom: 1rem; }
+        .court-footer { display: flex; justify-content: space-between; align-items: center; }
+        .court-coaches { font-size: 0.72rem; color: #4A6B4D; }
+        .court-coaches span { color: var(--green-accent); font-weight: 600; }
+        .book-btn { background: var(--green-mid); color: #fff; padding: 0.45rem 1.1rem; border: none; font-family: 'Outfit', sans-serif; font-size: 0.65rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; text-decoration: none; display: inline-block; transition: background 0.3s; }
+        .book-btn:hover { background: #1A4520; }
+        .book-btn.full { background: #d4e6d0; color: #8aab8c; cursor: not-allowed; }
+
+        /* FOOTER */
+        footer { background: var(--green-dark); padding: 1.5rem 4rem; display: flex; justify-content: space-between; align-items: center; margin-top: 4rem; }
+        .footer-logo { font-family: 'Cinzel', serif; color: rgba(255,255,255,0.5); font-size: 0.85rem; letter-spacing: 3px; }
+        .footer-copy { font-size: 0.7rem; color: rgba(255,255,255,0.2); }
+
+        @media (max-width: 900px) {
+            nav, .page-hero, .filter-bar, .main { padding-left: 1.5rem; padding-right: 1.5rem; }
+            .courts-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <a href="index.html" class="nav-logo">Tennis<span>Connect</span></a>
+    <ul class="nav-links">
+        <li><a href="coaches.html">Coaches</a></li>
+        <li><a href="courts.html" class="active">Courts</a></li>
+        <li><a href="login.html">Login</a></li>
+    </ul>
+    <a href="register.html" class="nav-btn">Get Started</a>
+</nav>
+
+<!-- HERO -->
+<div class="page-hero">
+    <div class="page-hero-grid"></div>
+    <div class="page-hero-content">
+        <div class="page-tag">Browse All Courts</div>
+        <h1 class="page-title">Explore Our Premium Courts</h1>
+        <p class="page-desc">Find the perfect court, check availability, and book with a coach that suits your schedule.</p>
+    </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+    <div class="search-wrap">
+        <input class="search-input" type="text" id="searchInput" placeholder="Search by court name or location..." oninput="filterCourts()">
+    </div>
+    <select class="filter-select" id="surfaceFilter" onchange="filterCourts()">
+        <option value="">All Surfaces</option>
+        <option>Hard</option>
+        <option>Clay</option>
+        <option>Grass</option>
+        <option>Indoor</option>
+    </select>
+    <select class="filter-select" id="statusFilter" onchange="filterCourts()">
+        <option value="">All Status</option>
+        <option value="available">Available</option>
+        <option value="busy">Busy</option>
+    </select>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+    <div class="results-header">
+        <div class="results-count">Showing <span id="countNum">0</span> courts</div>
+    </div>
+    <div class="courts-grid" id="courtsGrid">
+        <div style="grid-column:1/-1;text-align:center;padding:3rem;color:#8aab8c;">Loading courts...</div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-logo">TennisConnect</div>
+    <div class="footer-copy">© 2026 TennisConnect. All rights reserved.</div>
+</footer>
+
+<script>
+    const demoCourts = [
+        { courtId:1, courtName:'Court A', courtLocation:'Main Building, Floor 1', surface:'Hard', status:'available', coaches:4, features:['Floodlit','Air Conditioned','Spectator Seating'] },
+        { courtId:2, courtName:'Court B', courtLocation:'East Wing, Floor 2', surface:'Clay', status:'available', coaches:3, features:['Floodlit','Changing Rooms'] },
+        { courtId:3, courtName:'Court C', courtLocation:'Outdoor Area', surface:'Grass', status:'busy', coaches:2, features:['Natural Grass','Outdoor','Scenic View'] },
+        { courtId:4, courtName:'Court D', courtLocation:'Indoor Premium Hall', surface:'Indoor', status:'available', coaches:5, features:['Premium Surface','Climate Control','Pro Equipment'] },
+        { courtId:5, courtName:'Court E', courtLocation:'West Block, Ground Floor', surface:'Hard', status:'available', coaches:3, features:['Floodlit','Wheelchair Accessible'] },
+        { courtId:6, courtName:'Court F', courtLocation:'Rooftop Terrace', surface:'Hard', status:'busy', coaches:2, features:['Rooftop','Scenic View','Sunset Sessions'] },
+    ];
+
+    let allCourts = [];
+
+    fetch('/api/courts')
+        .then(r => r.json())
+        .then(data => {
+            allCourts = data.length > 0 ? data.map(c => ({
+                courtId: c.courtId,
+                courtName: c.courtName,
+                courtLocation: c.courtLocation || 'TennisConnect',
+                surface: 'Hard',
+                status: c.courtStatus === 'available' ? 'available' : 'busy',
+                coaches: Math.floor(Math.random() * 4) + 2,
+                features: ['Floodlit', 'Changing Rooms']
+            })) : demoCourts;
+            renderCourts(allCourts);
+        })
+        .catch(() => {
+            allCourts = demoCourts;
+            renderCourts(allCourts);
+        });
+
+    function getSurfaceClass(surface) {
+        const map = { 'Hard':'surface-hard', 'Clay':'surface-clay', 'Grass':'surface-grass', 'Indoor':'surface-indoor' };
+        return map[surface] || 'surface-hard';
+    }
+
+    function renderCourts(courts) {
+        document.getElementById('countNum').textContent = courts.length;
+        const grid = document.getElementById('courtsGrid');
+        if (courts.length === 0) {
+            grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:4rem;color:#8aab8c;">
+                <div style="font-size:2.5rem;margin-bottom:1rem;opacity:0.3;">🏟️</div>
+                <div style="font-family:'Cinzel',serif;font-size:1rem;color:#4A6B4D;">No courts found</div>
+            </div>`;
+            return;
+        }
+        grid.innerHTML = courts.map(c => `
+            <div class="court-card">
+                <div class="court-img">
+                    <div class="court-img-bg"></div>
+                    <div class="court-img-lines">
+                        <div class="court-field"></div>
+                    </div>
+                    <span class="court-surface-badge ${getSurfaceClass(c.surface)}">${c.surface}</span>
+                    <span class="court-status-badge ${c.status === 'available' ? 'status-available' : 'status-busy'}">${c.status === 'available' ? 'Available' : 'Busy'}</span>
+                    <div class="court-number">${c.courtName.replace('Court ','')}</div>
+                </div>
+                <div class="court-info">
+                    <div class="court-name">${c.courtName}</div>
+                    <div class="court-location">📍 ${c.courtLocation}</div>
+                    <div class="court-features">
+                        ${(c.features || []).map(f => `<span class="feature-tag">${f}</span>`).join('')}
+                    </div>
+                    <div class="court-divider"></div>
+                    <div class="court-footer">
+                        <div class="court-coaches"><span>${c.coaches || 0}</span> coaches available</div>
+                        <a href="booking.html?court=${c.courtId}&mode=court" class="book-btn ${c.status !== 'available' ? 'full' : ''}">
+                            ${c.status === 'available' ? 'Book Now' : 'Unavailable'}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function filterCourts() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const surface = document.getElementById('surfaceFilter').value;
+        const status = document.getElementById('statusFilter').value;
+
+        const filtered = allCourts.filter(c => {
+            const matchSearch = !search || c.courtName.toLowerCase().includes(search) || (c.courtLocation||'').toLowerCase().includes(search);
+            const matchSurface = !surface || c.surface === surface;
+            const matchStatus = !status || c.status === status;
+            return matchSearch && matchSurface && matchStatus;
+        });
+        renderCourts(filtered);
+    }
+</script>
+</body>
+</html>

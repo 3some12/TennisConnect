@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TennisConnect — Book a Session</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --green-dark: #0A1F0C;
+            --green-mid: #112A14;
+            --green-light: #EFF5EE;
+            --green-accent: #4CAF72;
+            --gold: #C8A951;
+        }
+        body { background: var(--green-light); font-family: 'Outfit', sans-serif; }
+
+        /* NAV */
+        nav { background: var(--green-mid); padding: 1rem 4rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(76,175,114,0.15); }
+        .nav-logo { font-family: 'Cinzel', serif; color: #fff; font-size: 1rem; font-weight: 600; letter-spacing: 4px; text-decoration: none; }
+        .nav-logo span { color: var(--green-accent); }
+        .nav-back { font-size: 0.72rem; color: rgba(255,255,255,0.45); text-decoration: none; display: flex; align-items: center; gap: 0.4rem; transition: color 0.3s; }
+        .nav-back:hover { color: var(--green-accent); }
+
+        /* STEPS BAR */
+        .steps-bar { background: #fff; padding: 1.2rem 4rem; border-bottom: 1px solid #d4e6d0; }
+        .steps { display: flex; align-items: center; gap: 0; max-width: 600px; }
+        .step { display: flex; align-items: center; gap: 0.6rem; flex: 1; }
+        .step-circle { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 600; flex-shrink: 0; transition: all 0.3s; }
+        .step-circle.active { background: var(--green-mid); color: #fff; }
+        .step-circle.done { background: var(--green-accent); color: #fff; }
+        .step-circle.inactive { background: #d4e6d0; color: #4A6B4D; }
+        .step-label { font-size: 0.72rem; letter-spacing: 1px; text-transform: uppercase; color: #4A6B4D; }
+        .step-label.active { color: #0F2D12; font-weight: 600; }
+        .step-line { flex: 1; height: 1px; background: #d4e6d0; margin: 0 0.5rem; }
+        .step-line.done { background: var(--green-accent); }
+
+        /* MAIN */
+        .main { display: grid; grid-template-columns: 1fr 360px; gap: 2rem; padding: 2.5rem 4rem; max-width: 1200px; margin: 0 auto; }
+
+        /* BOOKING STEPS */
+        .booking-panel { }
+        .panel-title { font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 600; color: #0F2D12; margin-bottom: 1.5rem; letter-spacing: 1px; }
+
+        /* STEP 1: SELECT COACH */
+        .step-panel { display: none; }
+        .step-panel.active { display: block; }
+
+        .mode-toggle { display: flex; gap: 1rem; margin-bottom: 2rem; }
+        .mode-btn { flex: 1; padding: 0.9rem; border: 2px solid #d4e6d0; background: #fff; font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 500; color: #4A6B4D; cursor: pointer; transition: all 0.3s; text-align: center; }
+        .mode-btn.active { border-color: var(--green-mid); background: var(--green-mid); color: #fff; }
+        .mode-btn .mode-icon { font-size: 1.5rem; display: block; margin-bottom: 0.4rem; }
+
+        .list-grid { display: flex; flex-direction: column; gap: 0.8rem; }
+        .list-item { background: #fff; border: 2px solid #d4e6d0; padding: 1rem 1.2rem; cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: all 0.2s; }
+        .list-item:hover { border-color: var(--green-accent); }
+        .list-item.selected { border-color: var(--green-mid); background: #f0f8f0; }
+        .list-item-icon { width: 44px; height: 44px; background: var(--green-mid); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+        .list-item-info { flex: 1; }
+        .list-item-name { font-family: 'Cinzel', serif; font-size: 0.92rem; font-weight: 600; color: #0F2D12; margin-bottom: 0.2rem; }
+        .list-item-sub { font-size: 0.75rem; color: #4A6B4D; }
+        .list-item-badge { font-size: 0.65rem; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; }
+        .list-item-check { width: 20px; height: 20px; border: 2px solid #d4e6d0; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
+        .list-item.selected .list-item-check { background: var(--green-mid); border-color: var(--green-mid); color: #fff; font-size: 0.65rem; }
+
+        /* STEP 2: SELECT COURT */
+        .court-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
+        .court-card { background: #fff; border: 2px solid #d4e6d0; padding: 1.2rem; cursor: pointer; transition: all 0.2s; }
+        .court-card:hover { border-color: var(--green-accent); }
+        .court-card.selected { border-color: var(--green-mid); background: #f0f8f0; }
+        .court-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .court-name { font-family: 'Cinzel', serif; font-size: 0.88rem; font-weight: 600; color: #0F2D12; margin-bottom: 0.2rem; }
+        .court-location { font-size: 0.75rem; color: #4A6B4D; }
+        .court-status { font-size: 0.65rem; color: var(--green-accent); letter-spacing: 1px; text-transform: uppercase; margin-top: 0.5rem; }
+
+        /* STEP 3: SELECT TIME */
+        .date-picker { margin-bottom: 1.5rem; }
+        .date-label { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: #4A6B4D; margin-bottom: 0.5rem; display: block; }
+        .date-input { width: 100%; padding: 0.75rem 1rem; border: 1px solid #d4e6d0; background: #fff; font-family: 'Outfit', sans-serif; font-size: 0.88rem; color: #0F2D12; outline: none; transition: border-color 0.3s; }
+        .date-input:focus { border-color: var(--green-accent); }
+
+        .time-slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+        .time-slot { background: #fff; border: 1px solid #d4e6d0; padding: 0.6rem 0.4rem; text-align: center; cursor: pointer; font-size: 0.78rem; color: #4A6B4D; transition: all 0.2s; }
+        .time-slot:hover { border-color: var(--green-accent); color: #0F2D12; }
+        .time-slot.selected { background: var(--green-mid); border-color: var(--green-mid); color: #fff; }
+        .time-slot.booked { background: #f5f5f5; color: #ccc; cursor: not-allowed; }
+
+        /* STEP 4: CONFIRM */
+        .confirm-section { background: #fff; border: 1px solid #d4e6d0; padding: 1.5rem; margin-bottom: 1rem; }
+        .confirm-row { display: flex; justify-content: space-between; align-items: center; padding: 0.7rem 0; border-bottom: 1px solid #f0f8ee; }
+        .confirm-row:last-child { border-bottom: none; }
+        .confirm-label { font-size: 0.72rem; letter-spacing: 1px; text-transform: uppercase; color: #4A6B4D; }
+        .confirm-value { font-family: 'Cinzel', serif; font-size: 0.88rem; color: #0F2D12; font-weight: 600; }
+        .confirm-note { background: #f0f8f0; border: 1px solid #d4e6d0; padding: 1rem; font-size: 0.8rem; color: #4A6B4D; line-height: 1.6; margin-bottom: 1rem; }
+
+        /* NAVIGATION BUTTONS */
+        .nav-buttons { display: flex; gap: 1rem; margin-top: 2rem; }
+        .btn-next { background: var(--green-mid); color: #fff; padding: 0.8rem 2rem; border: none; font-family: 'Outfit', sans-serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; flex: 1; transition: background 0.3s; }
+        .btn-next:hover { background: #1A4520; }
+        .btn-next:disabled { background: #d4e6d0; color: #8aab8c; cursor: not-allowed; }
+        .btn-back { background: transparent; color: #4A6B4D; padding: 0.8rem 1.5rem; border: 1px solid #d4e6d0; font-family: 'Outfit', sans-serif; font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.3s; }
+        .btn-back:hover { border-color: var(--green-mid); color: #0F2D12; }
+        .btn-confirm { background: var(--gold); color: var(--green-dark); padding: 0.8rem 2rem; border: none; font-family: 'Outfit', sans-serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; flex: 1; transition: background 0.3s; }
+        .btn-confirm:hover { background: #DBBE6A; }
+
+        /* SUMMARY SIDEBAR */
+        .summary { position: sticky; top: 1rem; }
+        .summary-card { background: var(--green-mid); padding: 1.5rem; margin-bottom: 1rem; }
+        .summary-title { font-family: 'Cinzel', serif; font-size: 0.88rem; font-weight: 600; color: #fff; letter-spacing: 1px; margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(76,175,114,0.2); }
+        .summary-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .summary-row:last-child { border-bottom: none; }
+        .summary-key { font-size: 0.7rem; color: rgba(255,255,255,0.4); letter-spacing: 1px; text-transform: uppercase; }
+        .summary-val { font-size: 0.82rem; color: #fff; font-weight: 500; text-align: right; }
+        .summary-val.empty { color: rgba(255,255,255,0.2); font-style: italic; font-size: 0.75rem; }
+        .price-card { background: #fff; border: 1px solid #d4e6d0; padding: 1.2rem; }
+        .price-row { display: flex; justify-content: space-between; padding: 0.4rem 0; font-size: 0.82rem; }
+        .price-total { font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 700; color: #0F2D12; border-top: 1px solid #d4e6d0; margin-top: 0.5rem; padding-top: 0.8rem; display: flex; justify-content: space-between; }
+        .price-total span { color: var(--green-accent); }
+
+        /* SUCCESS */
+        .success-screen { display: none; text-align: center; padding: 4rem 2rem; }
+        .success-screen.show { display: block; }
+        .success-icon { font-size: 4rem; margin-bottom: 1.5rem; }
+        .success-title { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 700; color: #0F2D12; margin-bottom: 0.8rem; }
+        .success-desc { font-size: 0.9rem; color: #4A6B4D; line-height: 1.7; margin-bottom: 2rem; max-width: 400px; margin-left: auto; margin-right: auto; }
+        .success-actions { display: flex; gap: 1rem; justify-content: center; }
+
+        @media (max-width: 900px) {
+            nav, .steps-bar { padding-left: 1.5rem; padding-right: 1.5rem; }
+            .main { grid-template-columns: 1fr; padding: 1.5rem; }
+            .summary { display: none; }
+            .time-slots { grid-template-columns: repeat(3, 1fr); }
+            .court-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <a href="index.html" class="nav-logo">Tennis<span>Connect</span></a>
+    <a href="coaches.html" class="nav-back">← Back to Coaches</a>
+</nav>
+
+<!-- STEPS BAR -->
+<div class="steps-bar">
+    <div class="steps">
+        <div class="step">
+            <div class="step-circle active" id="sc1">1</div>
+            <div class="step-label active" id="sl1">Choose</div>
+        </div>
+        <div class="step-line" id="line1"></div>
+        <div class="step">
+            <div class="step-circle inactive" id="sc2">2</div>
+            <div class="step-label" id="sl2">Court</div>
+        </div>
+        <div class="step-line" id="line2"></div>
+        <div class="step">
+            <div class="step-circle inactive" id="sc3">3</div>
+            <div class="step-label" id="sl3">Time</div>
+        </div>
+        <div class="step-line" id="line3"></div>
+        <div class="step">
+            <div class="step-circle inactive" id="sc4">4</div>
+            <div class="step-label" id="sl4">Confirm</div>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main" id="mainContent">
+
+    <!-- LEFT: BOOKING PANELS -->
+    <div class="booking-panel">
+
+        <!-- STEP 1: COACH OR COURT FIRST -->
+        <div class="step-panel active" id="step1">
+            <div class="panel-title">How Would You Like to Book?</div>
+            <div class="mode-toggle">
+                <button class="mode-btn active" id="modeCoach" onclick="setMode('coach')">
+                    <span class="mode-icon">🎾</span>
+                    Coach First
+                    <div style="font-size:0.7rem;margin-top:0.3rem;opacity:0.7">Choose a coach, then pick available courts</div>
+                </button>
+                <button class="mode-btn" id="modeCourt" onclick="setMode('court')">
+                    <span class="mode-icon">🏟️</span>
+                    Court First
+                    <div style="font-size:0.7rem;margin-top:0.3rem;opacity:0.7">Choose a court, then see available coaches</div>
+                </button>
+            </div>
+
+            <div id="coachList">
+                <div style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:#4A6B4D;margin-bottom:0.8rem;">Select a Coach</div>
+                <div class="list-grid" id="coachListItems"></div>
+            </div>
+
+            <div id="courtFirstList" style="display:none;">
+                <div style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:#4A6B4D;margin-bottom:0.8rem;">Select a Court</div>
+                <div class="list-grid" id="courtFirstItems"></div>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn-next" id="nextStep1" onclick="goToStep(2)" disabled>Continue →</button>
+            </div>
+        </div>
+
+        <!-- STEP 2: SELECT COURT (if coach first) or SELECT COACH (if court first) -->
+        <div class="step-panel" id="step2">
+            <div class="panel-title" id="step2Title">Select a Court</div>
+            <div class="list-grid" id="step2List"></div>
+            <div class="nav-buttons">
+                <button class="btn-back" onclick="goToStep(1)">← Back</button>
+                <button class="btn-next" id="nextStep2" onclick="goToStep(3)" disabled>Continue →</button>
+            </div>
+        </div>
+
+        <!-- STEP 3: SELECT DATE & TIME -->
+        <div class="step-panel" id="step3">
+            <div class="panel-title">Select Date & Time</div>
+            <div class="date-picker">
+                <label class="date-label">Select Date</label>
+                <input type="date" class="date-input" id="dateInput" onchange="loadTimeSlots()">
+            </div>
+            <div style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:#4A6B4D;margin-bottom:0.8rem;">Available Time Slots</div>
+            <div class="time-slots" id="timeSlots">
+                <div style="grid-column:1/-1;text-align:center;color:#8aab8c;font-size:0.82rem;padding:1rem;">Please select a date first</div>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn-back" onclick="goToStep(2)">← Back</button>
+                <button class="btn-next" id="nextStep3" onclick="goToStep(4)" disabled>Continue →</button>
+            </div>
+        </div>
+
+        <!-- STEP 4: CONFIRM -->
+        <div class="step-panel" id="step4">
+            <div class="panel-title">Confirm Your Booking</div>
+            <div class="confirm-section">
+                <div class="confirm-row">
+                    <span class="confirm-label">Coach</span>
+                    <span class="confirm-value" id="confirmCoach">—</span>
+                </div>
+                <div class="confirm-row">
+                    <span class="confirm-label">Court</span>
+                    <span class="confirm-value" id="confirmCourt">—</span>
+                </div>
+                <div class="confirm-row">
+                    <span class="confirm-label">Date</span>
+                    <span class="confirm-value" id="confirmDate">—</span>
+                </div>
+                <div class="confirm-row">
+                    <span class="confirm-label">Time</span>
+                    <span class="confirm-value" id="confirmTime">—</span>
+                </div>
+                <div class="confirm-row">
+                    <span class="confirm-label">Duration</span>
+                    <span class="confirm-value">60 minutes</span>
+                </div>
+            </div>
+            <div class="confirm-note">
+                📋 By confirming this booking, you agree to show up on time. Cancellations must be made at least 24 hours in advance. Your coach will be notified and will confirm the session shortly.
+            </div>
+            <div class="nav-buttons">
+                <button class="btn-back" onclick="goToStep(3)">← Back</button>
+                <button class="btn-confirm" onclick="confirmBooking()">Confirm Booking ✓</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT: SUMMARY -->
+    <div class="summary">
+        <div class="summary-card">
+            <div class="summary-title">Booking Summary</div>
+            <div class="summary-row">
+                <span class="summary-key">Coach</span>
+                <span class="summary-val empty" id="sumCoach">Not selected</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-key">Court</span>
+                <span class="summary-val empty" id="sumCourt">Not selected</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-key">Date</span>
+                <span class="summary-val empty" id="sumDate">Not selected</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-key">Time</span>
+                <span class="summary-val empty" id="sumTime">Not selected</span>
+            </div>
+        </div>
+        <div class="price-card">
+            <div class="price-row"><span>Session (60 min)</span><span id="priceSession">$80.00</span></div>
+            <div class="price-row"><span>Platform fee</span><span>$5.00</span></div>
+            <div class="price-total"><span>Total</span><span id="priceTotal">$85.00</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- SUCCESS SCREEN -->
+<div class="success-screen" id="successScreen">
+    <div class="success-icon">🎉</div>
+    <div class="success-title">Booking Confirmed!</div>
+    <p class="success-desc">Your session has been booked successfully. Your coach will confirm the session shortly. Check your dashboard for updates.</p>
+    <div class="success-actions">
+        <a href="dashboard.html" class="btn-next" style="text-decoration:none;display:inline-block;padding:0.8rem 2rem;">Go to Dashboard</a>
+        <a href="coaches.html" class="btn-back" style="text-decoration:none;display:inline-block;padding:0.8rem 1.5rem;">Book Another</a>
+    </div>
+</div>
+
+<script>
+    let bookingMode = 'coach';
+    let selectedCoach = null;
+    let selectedCourt = null;
+    let selectedCourse = null;
+    let selectedDate = null;
+    let selectedTime = null;
+    let currentStep = 1;
+    let currentUserId = null;
+
+    const timeSlots = ['8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM',
+                       '1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM'];
+
+    // 設定最早日期為今天
+    document.getElementById('dateInput').min = new Date().toISOString().split('T')[0];
+
+    // 初始化 — 檢查登入狀態
+    async function init() {
+        const res = await fetch('/api/auth/me');
+        const data = await res.json();
+        if (!data.loggedIn || data.role !== 'user') {
+            window.location.href = 'login.html';
+            return;
+        }
+        currentUserId = data.id;
+        renderCoachList();
+    }
+
+    // 切換模式
+    function setMode(mode) {
+        bookingMode = mode;
+        selectedCoach = null;
+        selectedCourt = null;
+        selectedCourse = null;
+        document.getElementById('nextStep1').disabled = true;
+        document.getElementById('modeCoach').classList.toggle('active', mode === 'coach');
+        document.getElementById('modeCourt').classList.toggle('active', mode === 'court');
+        document.getElementById('coachList').style.display = mode === 'coach' ? 'block' : 'none';
+        document.getElementById('courtFirstList').style.display = mode === 'court' ? 'block' : 'none';
+        if (mode === 'coach') renderCoachList();
+        else renderCourtList();
+    }
+
+    // 載入真實教練列表
+    async function renderCoachList() {
+        try {
+            const res = await fetch('/api/coaches');
+            const coaches = await res.json();
+            const icons = ['🎾','🏆','💪','⭐','🎯','🏅'];
+            document.getElementById('coachListItems').innerHTML = coaches.map((c, i) => `
+                <div class="list-item" onclick="selectCoach(${c.coachId},'${c.firstName} ${c.lastName}',this)">
+                    <div class="list-item-icon">${icons[i % icons.length]}</div>
+                    <div class="list-item-info">
+                        <div class="list-item-name">${c.firstName} ${c.lastName}</div>
+                        <div class="list-item-sub">${c.specialty || 'Tennis Coach'} · ${c.experienceYears || 0} yrs exp.</div>
+                    </div>
+                    <div class="list-item-check"></div>
+                </div>
+            `).join('');
+        } catch(e) {
+            console.error('Failed to load coaches', e);
+        }
+    }
+
+    // 載入真實球場列表
+    async function renderCourtList() {
+        try {
+            const res = await fetch('/api/courts');
+            const courts = await res.json();
+            document.getElementById('courtFirstItems').innerHTML = courts.map(c => `
+                <div class="list-item" onclick="selectCourtFirst(${c.courtId},'${c.courtName}',this)">
+                    <div class="list-item-icon">🏟️</div>
+                    <div class="list-item-info">
+                        <div class="list-item-name">${c.courtName}</div>
+                        <div class="list-item-sub">${c.courtLocation || 'TennisConnect'}</div>
+                    </div>
+                    <div class="list-item-check"></div>
+                </div>
+            `).join('');
+        } catch(e) {
+            console.error('Failed to load courts', e);
+        }
+    }
+
+    function selectCoach(id, name, el) {
+        selectedCoach = { id, name };
+        document.querySelectorAll('#coachListItems .list-item').forEach(i => {
+            i.classList.remove('selected');
+            i.querySelector('.list-item-check').textContent = '';
+        });
+        el.classList.add('selected');
+        el.querySelector('.list-item-check').textContent = '✓';
+        document.getElementById('nextStep1').disabled = false;
+        updateSummary();
+    }
+
+    function selectCourtFirst(id, name, el) {
+        selectedCourt = { id, name };
+        document.querySelectorAll('#courtFirstItems .list-item').forEach(i => {
+            i.classList.remove('selected');
+            i.querySelector('.list-item-check').textContent = '';
+        });
+        el.classList.add('selected');
+        el.querySelector('.list-item-check').textContent = '✓';
+        document.getElementById('nextStep1').disabled = false;
+        updateSummary();
+    }
+
+    function goToStep(step) {
+        document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById(`step${step}`).classList.add('active');
+        currentStep = step;
+        updateStepsBar();
+        if (step === 2) renderStep2();
+        if (step === 4) renderConfirm();
+    }
+
+    // Step 2 — 載入真實課程
+    async function renderStep2() {
+        const list = document.getElementById('step2List');
+        try {
+            let courses = [];
+            if (bookingMode === 'coach') {
+                document.getElementById('step2Title').textContent = 'Select a Court & Course';
+                const res = await fetch(`/api/courses/coach/${selectedCoach.id}`);
+                courses = await res.json();
+            } else {
+                document.getElementById('step2Title').textContent = 'Select a Coach & Course';
+                const res = await fetch(`/api/courses/court/${selectedCourt.id}`);
+                courses = await res.json();
+            }
+
+            if (courses.length === 0) {
+                list.innerHTML = `<div style="text-align:center;padding:2rem;color:#8aab8c;">No courses available.</div>`;
+                return;
+            }
+
+            list.innerHTML = courses.map(c => `
+                <div class="list-item" onclick="selectCourse(${c.courseId},'${c.courseName}',this)"
+                     data-coach="${c.coach ? c.coach.firstName + ' ' + c.coach.lastName : ''}"
+                     data-court="${c.court ? c.court.courtName : ''}">
+                    <div class="list-item-icon">🎾</div>
+                    <div class="list-item-info">
+                        <div class="list-item-name">${c.courseName}</div>
+                        <div class="list-item-sub">
+                            ${bookingMode === 'coach'
+                                ? (c.court ? c.court.courtName : '') + ' · $' + c.coursePrice
+                                : (c.coach ? c.coach.firstName + ' ' + c.coach.lastName : '') + ' · $' + c.coursePrice}
+                        </div>
+                        <div class="list-item-badge">${c.courseLevel || ''}</div>
+                    </div>
+                    <div class="list-item-check"></div>
+                </div>
+            `).join('');
+        } catch(e) {
+            console.error('Failed to load courses', e);
+        }
+    }
+
+    function selectCourse(id, name, el) {
+        selectedCourse = { id, name };
+        const coachName = el.dataset.coach;
+        const courtName = el.dataset.court;
+
+        if (bookingMode === 'coach') selectedCourt = { name: courtName };
+        else selectedCoach = { name: coachName };
+
+        document.querySelectorAll('#step2List .list-item').forEach(i => {
+            i.classList.remove('selected');
+            i.querySelector('.list-item-check').textContent = '';
+        });
+        el.classList.add('selected');
+        el.querySelector('.list-item-check').textContent = '✓';
+        document.getElementById('nextStep2').disabled = false;
+        updateSummary();
+    }
+
+    function loadTimeSlots() {
+        selectedDate = document.getElementById('dateInput').value;
+        selectedTime = null;
+        document.getElementById('nextStep3').disabled = true;
+        updateSummary();
+
+        document.getElementById('timeSlots').innerHTML = timeSlots.map(t => `
+            <div class="time-slot" onclick="selectTime('${t}', this)">${t}</div>
+        `).join('');
+    }
+
+    function selectTime(time, el) {
+        selectedTime = time;
+        document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+        el.classList.add('selected');
+        document.getElementById('nextStep3').disabled = false;
+        updateSummary();
+    }
+
+    function renderConfirm() {
+        document.getElementById('confirmCoach').textContent = selectedCoach?.name || '—';
+        document.getElementById('confirmCourt').textContent = selectedCourt?.name || '—';
+        document.getElementById('confirmDate').textContent = selectedDate
+            ? new Date(selectedDate).toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
+            : '—';
+        document.getElementById('confirmTime').textContent = selectedTime || '—';
+    }
+
+    function updateSummary() {
+        const set = (id, val) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.textContent = val || 'Not selected';
+            el.className = val ? 'summary-val' : 'summary-val empty';
+        };
+        set('sumCoach', selectedCoach?.name);
+        set('sumCourt', selectedCourt?.name);
+        set('sumDate', selectedDate ? new Date(selectedDate).toLocaleDateString() : null);
+        set('sumTime', selectedTime);
+    }
+
+    function updateStepsBar() {
+        for (let i = 1; i <= 4; i++) {
+            const circle = document.getElementById(`sc${i}`);
+            const label  = document.getElementById(`sl${i}`);
+            if (i < currentStep) {
+                circle.className = 'step-circle done';
+                circle.textContent = '✓';
+                label.className = 'step-label';
+            } else if (i === currentStep) {
+                circle.className = 'step-circle active';
+                circle.textContent = i;
+                label.className = 'step-label active';
+            } else {
+                circle.className = 'step-circle inactive';
+                circle.textContent = i;
+                label.className = 'step-label';
+            }
+            if (i < 4) {
+                document.getElementById(`line${i}`).className = i < currentStep ? 'step-line done' : 'step-line';
+            }
+        }
+    }
+
+    // 真實預約 — 存入資料庫
+    async function confirmBooking() {
+        if (!currentUserId || !selectedCourse) {
+            alert('Please complete all steps first.');
+            return;
+        }
+
+        const bookingData = {
+            user: { userId: currentUserId },
+            course: { courseId: selectedCourse.id },
+            orderStatus: 'pending',
+            totalPrice: 85.00
+        };
+
+        try {
+            const res = await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bookingData)
+            });
+
+            if (res.ok) {
+                document.getElementById('mainContent').style.display = 'none';
+                document.querySelector('.steps-bar').style.display = 'none';
+                document.getElementById('successScreen').classList.add('show');
+            } else {
+                alert('Booking failed. Please try again.');
+            }
+        } catch(e) {
+            console.error('Booking error', e);
+            alert('Connection error. Please try again.');
+        }
+    }
+
+    init();
+</script>
+</body>
+</html>

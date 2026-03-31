@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TennisConnect — Find Your Coach</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --green-dark: #0A1F0C;
+            --green-mid: #112A14;
+            --green-card: #1A3A1E;
+            --green-light: #EFF5EE;
+            --green-accent: #4CAF72;
+            --gold: #C8A951;
+            --gray: rgba(255,255,255,0.45);
+        }
+        html { scroll-behavior: smooth; }
+        body { background: var(--green-light); font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+
+        /* NAV */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(17,42,20,0.97); backdrop-filter: blur(12px);
+            padding: 1rem 4rem; display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid rgba(76,175,114,0.15);
+        }
+        .nav-logo { font-family: 'Cinzel', serif; color: #fff; font-size: 1.1rem; font-weight: 600; letter-spacing: 4px; text-decoration: none; }
+        .nav-logo span { color: var(--green-accent); }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.45); text-decoration: none; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--green-accent); }
+        .nav-btn { background: var(--green-accent); color: var(--green-mid); padding: 0.45rem 1.3rem; font-size: 0.65rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; border: none; cursor: pointer; text-decoration: none; transition: background 0.3s; }
+        .nav-btn:hover { background: #5DC882; }
+
+        /* HERO */
+        .hero {
+            min-height: 40vh; background: var(--green-mid);
+            display: flex; align-items: center; padding: 8rem 4rem 4rem;
+            position: relative; overflow: hidden;
+        }
+        .hero-grid {
+            position: absolute; inset: 0;
+            background-image: linear-gradient(rgba(76,175,114,0.06) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(76,175,114,0.06) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        .hero-deco {
+            position: absolute; right: 6rem; top: 50%; transform: translateY(-50%);
+            width: 280px; height: 280px; border: 1px solid rgba(76,175,114,0.15);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+        .hero-deco::before {
+            content: ''; position: absolute; inset: 24px;
+            border: 1px solid rgba(200,169,81,0.15); border-radius: 50%;
+        }
+        .hero-deco-inner { font-size: 5rem; position: relative; z-index: 1; }
+        .hero-content { position: relative; max-width: 600px; }
+        .hero-tag {
+            font-size: 0.6rem; font-weight: 500; letter-spacing: 4px;
+            color: var(--gold); text-transform: uppercase; margin-bottom: 1rem;
+            display: flex; align-items: center; gap: 0.6rem;
+            opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+        }
+        .hero-tag::before { content: ''; width: 20px; height: 1px; background: var(--gold); }
+        .hero-h1 {
+            font-family: 'Cinzel', serif; font-size: clamp(2.2rem, 4vw, 3.2rem);
+            font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 1rem;
+            letter-spacing: 1px;
+            opacity: 0; animation: fadeUp 0.8s 0.4s forwards;
+        }
+        .hero-h1 span { color: var(--green-accent); }
+        .hero-desc {
+            font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+            color: rgba(255,255,255,0.45); line-height: 1.8; max-width: 420px; margin-bottom: 1.8rem;
+            opacity: 0; animation: fadeUp 0.8s 0.6s forwards;
+        }
+        .hero-btns {
+            display: flex; gap: 1rem; align-items: center;
+            opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
+        }
+        .btn-primary { background: var(--gold); color: var(--green-mid); padding: 0.7rem 2rem; font-size: 0.72rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; border: none; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.3s; }
+        .btn-primary:hover { background: #DBBE6A; transform: translateY(-2px); }
+        .btn-secondary { font-size: 0.72rem; color: rgba(255,255,255,0.5); background: none; border: 1px solid rgba(255,255,255,0.2); padding: 0.7rem 1.5rem; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.3s; }
+        .btn-secondary:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+        .hero-stats {
+            display: flex; gap: 2.5rem; margin-top: 2.5rem; padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.07);
+            opacity: 0; animation: fadeUp 0.8s 1s forwards;
+        }
+        .stat-num { font-family: 'Cinzel', serif; font-size: 1.8rem; color: var(--green-accent); line-height: 1; }
+        .stat-lbl { font-size: 0.6rem; color: rgba(255,255,255,0.3); letter-spacing: 2px; text-transform: uppercase; margin-top: 0.3rem; }
+
+        /* SECTIONS */
+        .section { padding: 3rem 4rem; }
+        .section-light { background: var(--green-light); }
+        .section-dark { background: var(--green-mid); }
+        .sec-tag { font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 0.5rem; }
+        .sec-title { font-family: 'Cinzel', serif; font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 600; margin-bottom: 2.5rem; letter-spacing: 1px; }
+        .sec-title-light { color: #0F2D12; }
+        .sec-title-dark { color: #fff; }
+
+        /* FEATURES */
+        .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #d4e6d0; }
+        .feat-card { background: #fff; padding: 1.8rem 1.5rem; position: relative; overflow: hidden; transition: background 0.3s; }
+        .feat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 0; height: 2px; background: var(--green-accent); transition: width 0.4s; }
+        .feat-card:hover::before { width: 100%; }
+        .feat-card:hover { background: #f8fdf8; }
+        .feat-num { font-size: 0.62rem; color: var(--gold); letter-spacing: 2px; margin-bottom: 0.6rem; }
+        .feat-title { font-family: 'Cinzel', serif; font-size: 0.9rem; font-weight: 600; color: #0F2D12; margin-bottom: 0.5rem; }
+        .feat-desc { font-family: 'DM Sans', sans-serif; font-size: 0.82rem; color: #4A6B4D; line-height: 1.7; }
+
+        /* COACHES */
+        .coach-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+        .coach-card { background: var(--green-card); border: 1px solid rgba(76,175,114,0.1); overflow: hidden; transition: transform 0.3s; cursor: pointer; }
+        .coach-card:hover { transform: translateY(-6px); }
+        .coach-avatar { height: 140px; background: #0F2D12; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; border-bottom: 1px solid rgba(76,175,114,0.1); }
+        .coach-info { padding: 1.2rem; }
+        .coach-name { font-family: 'Cinzel', serif; font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 0.3rem; }
+        .coach-spec { color: var(--gold); font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; }
+        .coach-meta { display: flex; justify-content: space-between; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.06); }
+        .coach-exp { color: rgba(255,255,255,0.35); font-size: 0.75rem; }
+        .coach-stars { color: var(--gold); font-size: 0.82rem; }
+
+        /* HOW IT WORKS */
+        .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid #d4e6d0; }
+        .step { padding: 1.8rem 1.5rem; border-right: 1px solid #d4e6d0; background: #fff; }
+        .step:last-child { border-right: none; }
+        .step-num { font-family: 'Cinzel', serif; font-size: 2.5rem; font-weight: 700; color: rgba(15,45,18,0.08); line-height: 1; margin-bottom: 0.5rem; }
+        .step-title { font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 600; color: #0F2D12; margin-bottom: 0.5rem; }
+        .step-desc { font-family: 'DM Sans', sans-serif; font-size: 0.8rem; color: #4A6B4D; line-height: 1.7; }
+
+        /* CTA */
+        .cta { background: #0F2D12; padding: 6rem 4rem; text-align: center; border-top: 1px solid rgba(76,175,114,0.15); }
+        .cta-title { font-family: 'Cinzel', serif; font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; color: #fff; margin-bottom: 0.8rem; letter-spacing: 1px; }
+        .cta-title span { color: var(--green-accent); }
+        .cta-desc { font-family: 'DM Sans', sans-serif; font-size: 0.95rem; color: rgba(255,255,255,0.4); margin-bottom: 2rem; }
+
+        /* FOOTER */
+        footer { background: var(--green-dark); padding: 2rem 4rem; display: flex; justify-content: space-between; align-items: center; }
+        .footer-logo { font-family: 'Cinzel', serif; color: rgba(255,255,255,0.5); font-size: 0.9rem; letter-spacing: 3px; }
+        .footer-copy { font-size: 0.72rem; color: rgba(255,255,255,0.2); }
+        .footer-links { display: flex; gap: 1.5rem; }
+        .footer-links a { color: rgba(255,255,255,0.25); font-size: 0.72rem; text-decoration: none; letter-spacing: 1px; text-transform: uppercase; transition: color 0.3s; }
+        .footer-links a:hover { color: var(--green-accent); }
+
+        /* ANIMATIONS */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            nav { padding: 1rem 1.5rem; }
+            .nav-links { display: none; }
+            .hero { padding: 7rem 1.5rem 3rem; }
+            .hero-deco { display: none; }
+            .section { padding: 4rem 1.5rem; }
+            .feat-grid { grid-template-columns: 1fr; }
+            .coach-grid { grid-template-columns: 1fr; }
+            .steps { grid-template-columns: repeat(2, 1fr); }
+            .step:nth-child(2) { border-right: none; }
+            footer { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <a href="index.html" class="nav-logo">Tennis<span>Connect</span></a>
+    <ul class="nav-links">
+        <li><a href="#coaches">Coaches</a></li>
+        <li><a href="#how">How It Works</a></li>
+        <li><a href="login.html">Login</a></li>
+    </ul>
+    <a href="register.html" class="nav-btn">Get Started</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-deco"><div class="hero-deco-inner">🎾</div></div>
+    <div class="hero-content">
+        <div class="hero-tag">Find Coaching and Court</div>
+        <h1 class="hero-h1">Your Way,<br><span>Your Coach,</span><br>Your Court</h1>
+        <p class="hero-desc">choose a coach or a court and book your perfect session in minutes.</p>
+
+        <div class="hero-stats">
+            <div><div class="stat-num">50+</div><div class="stat-lbl">Expert Coaches</div></div>
+            <div><div class="stat-num">98%</div><div class="stat-lbl">Satisfaction</div></div>
+            <div><div class="stat-num">500+</div><div class="stat-lbl">Sessions Booked</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- COACHES -->
+<!-- BROWSE SECTION -->
+<section class="section section-light" id="coaches">
+    <span class="sec-tag">Tennis Booking Platform</span>
+    <h2 class="sec-title sec-title-light">Your Game, Your Way</h2>
+    <p style="font-family:'DM Sans',sans-serif;font-size:0.95rem;color:#4A6B4D;margin-bottom:2.5rem;">Choose your coach or your court — we'll handle the rest.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+
+        <!-- COACH SQUARE -->
+        <div style="position:relative;overflow:hidden;cursor:pointer;min-height:380px;display:flex;flex-direction:column;justify-content:flex-end;transition:transform 0.3s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div style="position:absolute;inset:0;background:linear-gradient(160deg,#0F2D12 0%,rgba(17,42,20,0.97) 100%);"></div>
+            <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(76,175,114,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(76,175,114,0.06) 1px,transparent 1px);background-size:28px 28px;"></div>
+            <div style="position:absolute;width:220px;height:220px;border:1px solid rgba(76,175,114,0.1);border-radius:50%;top:-70px;right:-70px;"></div>
+            <div style="position:absolute;width:130px;height:130px;border:1px solid rgba(200,169,81,0.1);border-radius:50%;top:-20px;right:-20px;"></div>
+            <div style="position:relative;padding:2rem;z-index:1;">
+                <div style="font-size:2.8rem;margin-bottom:1rem;">🎾</div>
+                <div style="font-size:0.6rem;letter-spacing:4px;text-transform:uppercase;color:rgba(200,169,81,0.8);margin-bottom:0.5rem;">Browse by Coach</div>
+                <div style="font-family:'Cinzel',serif;font-size:1.6rem;font-weight:700;color:#fff;line-height:1.15;margin-bottom:0.8rem;">Find Your<br>Perfect Coach</div>
+                <div style="font-family:'DM Sans',sans-serif;font-size:0.82rem;color:rgba(255,255,255,0.45);line-height:1.7;margin-bottom:1.3rem;max-width:300px;">Choose from our certified coaches, read reviews, and book a session that fits your schedule and skill level.</div>
+                <a href="coaches.html" style="display:inline-flex;align-items:center;gap:0.5rem;background:#C8A951;color:#0F2D12;padding:0.7rem 1.6rem;font-family:'Outfit',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;transition:background 0.3s;" onmouseover="this.style.background='#DBBE6A'" onmouseout="this.style.background='#C8A951'">View All Coaches →</a>
+                <div style="display:flex;gap:2rem;margin-top:1.3rem;padding-top:1.3rem;border-top:1px solid rgba(255,255,255,0.08);">
+                    <div><div style="font-family:'Cinzel',serif;font-size:1.3rem;color:#4CAF72;">50+</div><div style="font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);">Coaches</div></div>
+                    <div><div style="font-family:'Cinzel',serif;font-size:1.3rem;color:#4CAF72;">4.9★</div><div style="font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);">Avg Rating</div></div>
+                    <div><div style="font-family:'Cinzel',serif;font-size:1.3rem;color:#4CAF72;">10+</div><div style="font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);">Specialties</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COURT SQUARE -->
+        <div style="position:relative;overflow:hidden;cursor:pointer;min-height:380px;display:flex;flex-direction:column;justify-content:flex-end;transition:transform 0.3s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div style="position:absolute;inset:0;background:linear-gradient(160deg,#1A4520 0%,rgba(26,64,32,0.97) 100%);"></div>
+            <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(200,169,81,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(200,169,81,0.05) 1px,transparent 1px);background-size:28px 28px;"></div>
+            <div style="position:absolute;width:220px;height:220px;border:1px solid rgba(200,169,81,0.1);border-radius:50%;top:-70px;right:-70px;"></div>
+            <div style="position:absolute;width:130px;height:130px;border:1px solid rgba(76,175,114,0.1);border-radius:50%;top:-20px;right:-20px;"></div>
+            <div style="position:relative;padding:2rem;z-index:1;">
+                <div style="font-size:2.8rem;margin-bottom:1rem;">🏟️</div>
+                <div style="font-size:0.6rem;letter-spacing:4px;text-transform:uppercase;color:rgba(200,169,81,0.8);margin-bottom:0.5rem;">Browse by Court</div>
+                <div style="font-family:'Cinzel',serif;font-size:1.6rem;font-weight:700;color:#fff;line-height:1.15;margin-bottom:0.8rem;">Explore Our<br>Premium Courts</div>
+                <div style="font-family:'DM Sans',sans-serif;font-size:0.82rem;color:rgba(255,255,255,0.45);line-height:1.7;margin-bottom:1.3rem;max-width:300px;">Browse available courts across the city, check availability, and find a coach that fits your chosen venue.</div>
+                <a href="courts.html" style="display:inline-flex;align-items:center;gap:0.5rem;background:#fff;color:#1A4520;padding:0.7rem 1.6rem;font-family:'Outfit',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;transition:background 0.3s;" onmouseover="this.style.background='#EFF5EE'" onmouseout="this.style.background='#fff'">View All Courts →</a>
+                <div style="display:flex;gap:2rem;margin-top:1.3rem;padding-top:1.3rem;border-top:1px solid rgba(255,255,255,0.08);">
+                    <div><div style="font-family:'Cinzel',serif;font-size:1.3rem;color:#C8A951;">12+</div><div style="font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);">Courts</div></div>
+                    <div><div style="font-family:'Cinzel',serif;font-size:1.3rem;color:#C8A951;">All</div><div style="font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);">Surfaces</div></div>
+                    <div><div style="font-family:'Cinzel',serif;font-size:1.3rem;color:#C8A951;">7</div><div style="font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);">Locations</div></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section section-light">
+    <span class="sec-tag">Why TennisConnect</span>
+    <h2 class="sec-title sec-title-light">Book Smarter, Play Better</h2>
+    <div class="feat-grid">
+        <div class="feat-card"><div class="feat-num">01 —</div><div class="feat-title">Coach First Booking</div><p class="feat-desc">Browse certified coaches, pick your favourite, then choose from their available courts and time slots.</p></div>
+        <div class="feat-card"><div class="feat-num">02 —</div><div class="feat-title">Court First Booking</div><p class="feat-desc">Browse available courts near you, then discover which coaches are available at that venue and time.</p></div>
+        <div class="feat-card"><div class="feat-num">03 —</div><div class="feat-title">Private Sessions</div><p class="feat-desc">Every session is 1-on-1 with your chosen coach. Personalized training tailored to your skill level.</p></div>
+        <div class="feat-card"><div class="feat-num">04 —</div><div class="feat-title">Real-Time Availability</div><p class="feat-desc">See live availability for coaches and courts. No double bookings, no confusion — just easy scheduling.</p></div>
+        <div class="feat-card"><div class="feat-num">05 —</div><div class="feat-title">Instant Confirmation</div><p class="feat-desc">Book your session and receive instant confirmation. Your coach is notified automatically.</p></div>
+        <div class="feat-card"><div class="feat-num">06 —</div><div class="feat-title">Honest Reviews</div><p class="feat-desc">Leave reviews after each session. Help other players find the best coaches and courts on the platform.</p></div>
+</section>
+
+
+
+<!-- HOW IT WORKS -->
+<section class="section section-light" id="how">
+    <span class="sec-tag">The Process</span>
+    <h2 class="sec-title sec-title-light">How It Works</h2>
+    <div class="steps">
+        <div class="step"><div class="step-num">01</div><div class="step-title">Create Account</div><p class="step-desc">Sign up as a member and complete your profile with your skill level and goals.</p></div>
+        <div class="step"><div class="step-num">02</div><div class="step-title">Choose Coach or Court</div><p class="step-desc">Browse by coach or by court — pick whichever suits your preference and schedule.</p></div>
+        <div class="step"><div class="step-num">03</div><div class="step-title">Book a Session</div><p class="step-desc">Select your preferred date, time and confirm your private 1-on-1 session instantly.</p></div>
+        <div class="step"><div class="step-num">04</div><div class="step-title">Play & Review</div><p class="step-desc">Show up, enjoy your session, then leave a review to help the TennisConnect community.</p></div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+    <h2 class="cta-title">Ready to Level Up<br><span>Your Tennis?</span></h2>
+    <p class="cta-desc">Join hundreds of players already training with our expert coaches.</p>
+    <a href="register.html" class="btn-primary">Create Free Account</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-logo">TennisConnect</div>
+    <div class="footer-copy">© 2026 TennisConnect. All rights reserved.</div>
+    <div class="footer-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Contact</a>
+    </div>
+</footer>
+
+<script>
+    // Load coaches from API
+    fetch('/api/coaches')
+        .then(r => r.json())
+        .then(coaches => {
+            if (coaches.length === 0) return;
+            const grid = document.getElementById('coachGrid');
+            const icons = ['🎾','🏆','💪','⭐','🎯','🏅'];
+            grid.innerHTML = coaches.slice(0,3).map((c,i) => `
+                <div class="coach-card">
+                    <div class="coach-avatar">${icons[i % icons.length]}</div>
+                    <div class="coach-info">
+                        <div class="coach-name">${c.firstName} ${c.lastName}</div>
+                        <div class="coach-spec">${c.specialty || 'Tennis Coach'}</div>
+                        <div class="coach-meta">
+                            <span class="coach-exp">${c.experienceYears || 0} yrs exp.</span>
+                            <span class="coach-stars">★ 5.0</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }).catch(() => {});
+</script>
+</body>
+</html>

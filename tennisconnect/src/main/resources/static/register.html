@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TennisConnect — Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --green-dark: #0A1F0C;
+            --green-mid: #112A14;
+            --green-light: #EFF5EE;
+            --green-accent: #4CAF72;
+            --gold: #C8A951;
+        }
+        body { min-height: 100vh; display: flex; font-family: 'Outfit', sans-serif; background: var(--green-mid); }
+
+        /* LEFT */
+        .left {
+            width: 45%; background: var(--green-mid);
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 4rem; position: relative; overflow: hidden;
+        }
+        .left-grid {
+            position: absolute; inset: 0;
+            background-image: linear-gradient(rgba(76,175,114,0.06) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(76,175,114,0.06) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        .left-deco { position: absolute; left: -80px; top: -80px; width: 280px; height: 280px; border: 1px solid rgba(76,175,114,0.1); border-radius: 50%; }
+        .left-deco::before { content: ''; position: absolute; inset: 30px; border: 1px solid rgba(200,169,81,0.1); border-radius: 50%; }
+        .left-content { position: relative; }
+        .left-logo { font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 600; letter-spacing: 4px; color: #fff; text-decoration: none; margin-bottom: 4rem; display: block; }
+        .left-logo span { color: var(--green-accent); }
+        .left-tag { font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.6rem; }
+        .left-tag::before { content: ''; width: 20px; height: 1px; background: var(--gold); }
+        .left-title { font-family: 'Cinzel', serif; font-size: 2.2rem; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 1rem; }
+        .left-title span { color: var(--green-accent); }
+        .left-desc { font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: rgba(255,255,255,0.4); line-height: 1.8; max-width: 340px; margin-bottom: 2.5rem; }
+        .perks { display: flex; flex-direction: column; gap: 1rem; }
+        .perk { display: flex; align-items: center; gap: 1rem; }
+        .perk-icon { width: 32px; height: 32px; background: rgba(76,175,114,0.1); border: 1px solid rgba(76,175,114,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+        .perk-text { font-size: 0.82rem; color: rgba(255,255,255,0.5); }
+        .back-home { display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: rgba(255,255,255,0.35); text-decoration: none; margin-top: 3rem; transition: color 0.3s; }
+        .back-home:hover { color: var(--green-accent); }
+
+        /* RIGHT */
+        .right { width: 55%; background: var(--green-light); display: flex; align-items: center; justify-content: center; padding: 3rem; overflow-y: auto; }
+        .form-box { width: 100%; max-width: 480px; }
+        .form-title { font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 700; color: #0F2D12; margin-bottom: 0.4rem; letter-spacing: 1px; }
+        .form-subtitle { font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: #4A6B4D; margin-bottom: 2rem; }
+
+        /* TABS */
+        .tabs { display: flex; margin-bottom: 2rem; border-bottom: 2px solid #d4e6d0; }
+        .tab { flex: 1; padding: 0.7rem; text-align: center; font-size: 0.72rem; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; border: none; background: none; color: #4A6B4D; font-family: 'Outfit', sans-serif; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.3s; }
+        .tab.active { color: #0F2D12; border-bottom-color: var(--green-accent); font-weight: 600; }
+
+        /* FORM */
+        .form { display: none; flex-direction: column; gap: 1rem; }
+        .form.active { display: flex; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .input-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        label { font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; color: #4A6B4D; font-weight: 500; }
+        input, select {
+            padding: 0.75rem 1rem; border: 1px solid #d4e6d0;
+            background: #fff; font-family: 'Outfit', sans-serif;
+            font-size: 0.88rem; color: #0F2D12; outline: none; transition: border-color 0.3s;
+        }
+        input:focus, select:focus { border-color: var(--green-accent); }
+        input::placeholder { color: #aac8ad; }
+        select { color: #0F2D12; cursor: pointer; }
+
+        .submit-btn { background: var(--green-mid); color: #fff; padding: 0.85rem; border: none; cursor: pointer; font-family: 'Outfit', sans-serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; transition: background 0.3s; margin-top: 0.5rem; }
+        .submit-btn:hover { background: #1A4520; }
+
+        .switch-text { text-align: center; font-size: 0.8rem; color: #4A6B4D; }
+        .switch-text a { color: var(--green-accent); text-decoration: none; font-weight: 500; }
+
+        .msg { padding: 0.7rem 1rem; font-size: 0.78rem; border-radius: 2px; display: none; }
+        .msg.error { background: #fee; color: #c44; border: 1px solid #fcc; display: block; }
+        .msg.success { background: #efe; color: #2a6; border: 1px solid #cfc; display: block; }
+
+        .section-divider { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: #8aab8c; padding: 0.3rem 0; border-bottom: 1px solid #d4e6d0; margin-bottom: 0.3rem; }
+
+        @media (max-width: 900px) {
+            body { flex-direction: column; }
+            .left { display: none; }
+            .right { width: 100%; padding: 2rem 1.5rem; }
+            .row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LEFT -->
+<div class="left">
+    <div class="left-grid"></div>
+    <div class="left-deco"></div>
+    <div class="left-content">
+        <a href="index.html" class="left-logo">Tennis<span>Connect</span></a>
+        <div class="left-tag">Join Today</div>
+        <h1 class="left-title">Start Your<br><span>Tennis Journey</span></h1>
+        <p class="left-desc">Create your account and connect with the best tennis coaches in your area. Book sessions, track progress, and improve your game.</p>
+        <div class="perks">
+            <div class="perk"><div class="perk-icon">🎾</div><div class="perk-text">Access 50+ certified coaches</div></div>
+            <div class="perk"><div class="perk-icon">📅</div><div class="perk-text">Book sessions instantly online</div></div>
+            <div class="perk"><div class="perk-icon">⭐</div><div class="perk-text">Read & leave honest reviews</div></div>
+            <div class="perk"><div class="perk-icon">📊</div><div class="perk-text">Track your improvement over time</div></div>
+        </div>
+        <a href="index.html" class="back-home">← Back to Home</a>
+    </div>
+</div>
+
+<!-- RIGHT -->
+<div class="right">
+    <div class="form-box">
+        <div class="form-title">Create Account</div>
+        <div class="form-subtitle">Join TennisConnect today — it's free!</div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('member')">I'm a Member</button>
+            <button class="tab" onclick="switchTab('coach')">I'm a Coach</button>
+        </div>
+
+        <!-- MEMBER FORM -->
+        <form class="form active" id="memberForm" onsubmit="handleRegister(event, 'member')">
+            <div class="msg" id="memberMsg"></div>
+            <div class="section-divider">Personal Info</div>
+            <div class="row">
+                <div class="input-group">
+                    <label>First Name</label>
+                    <input type="text" id="m-firstName" placeholder="Jane" required>
+                </div>
+                <div class="input-group">
+                    <label>Last Name</label>
+                    <input type="text" id="m-lastName" placeholder="Smith" required>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" id="m-email" placeholder="jane@email.com" required>
+            </div>
+            <div class="input-group">
+                <label>Phone Number</label>
+                <input type="tel" id="m-phone" placeholder="+1 (604) 000-0000">
+            </div>
+            <div class="section-divider">Security</div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="m-pass" placeholder="Min. 8 characters" required minlength="8">
+            </div>
+            <div class="input-group">
+                <label>Confirm Password</label>
+                <input type="password" id="m-pass2" placeholder="Repeat your password" required>
+            </div>
+            <button type="submit" class="submit-btn">Create Member Account</button>
+            <div class="switch-text">Already have an account? <a href="login.html">Sign in →</a></div>
+        </form>
+
+        <!-- COACH FORM -->
+        <form class="form" id="coachForm" onsubmit="handleRegister(event, 'coach')">
+            <div class="msg" id="coachMsg"></div>
+            <div class="section-divider">Personal Info</div>
+            <div class="row">
+                <div class="input-group">
+                    <label>First Name</label>
+                    <input type="text" id="c-firstName" placeholder="John" required>
+                </div>
+                <div class="input-group">
+                    <label>Last Name</label>
+                    <input type="text" id="c-lastName" placeholder="Smith" required>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" id="c-email" placeholder="coach@email.com" required>
+            </div>
+            <div class="input-group">
+                <label>Phone Number</label>
+                <input type="tel" id="c-phone" placeholder="+1 (604) 000-0000">
+            </div>
+            <div class="section-divider">Professional Info</div>
+            <div class="row">
+                <div class="input-group">
+                    <label>Years of Experience</label>
+                    <input type="number" id="c-exp" placeholder="e.g. 5" min="0" max="50">
+                </div>
+                <div class="input-group">
+                    <label>Specialty</label>
+                    <select id="c-specialty">
+                        <option value="">Select...</option>
+                        <option>Beginner Training</option>
+                        <option>Advanced Techniques</option>
+                        <option>Competitive Training</option>
+                        <option>Kids & Youth</option>
+                        <option>Fitness & Conditioning</option>
+                    </select>
+                </div>
+            </div>
+            <div class="section-divider">Security</div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="c-pass" placeholder="Min. 8 characters" required minlength="8">
+            </div>
+            <div class="input-group">
+                <label>Confirm Password</label>
+                <input type="password" id="c-pass2" placeholder="Repeat your password" required>
+            </div>
+            <button type="submit" class="submit-btn">Create Coach Account</button>
+            <div class="switch-text">Already have an account? <a href="login.html">Sign in →</a></div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function switchTab(type) {
+        document.querySelectorAll('.tab').forEach((t, i) => {
+            t.classList.toggle('active', (i === 0 && type === 'member') || (i === 1 && type === 'coach'));
+        });
+        document.getElementById('memberForm').classList.toggle('active', type === 'member');
+        document.getElementById('coachForm').classList.toggle('active', type === 'coach');
+    }
+
+    function handleRegister(e, type) {
+        e.preventDefault();
+        const msgEl = document.getElementById(type === 'member' ? 'memberMsg' : 'coachMsg');
+        const pass  = document.getElementById(type === 'member' ? 'm-pass' : 'c-pass').value;
+        const pass2 = document.getElementById(type === 'member' ? 'm-pass2' : 'c-pass2').value;
+
+        if (pass !== pass2) {
+            msgEl.className = 'msg error';
+            msgEl.textContent = 'Passwords do not match. Please try again.';
+            return;
+        }
+
+        const endpoint = type === 'member' ? '/api/users/register' : '/api/coaches/register';
+        const body = type === 'member' ? {
+            firstName:    document.getElementById('m-firstName').value,
+            lastName:     document.getElementById('m-lastName').value,
+            email:        document.getElementById('m-email').value,
+            phoneNumber:  document.getElementById('m-phone').value,
+            passwordHash: pass
+        } : {
+            firstName:       document.getElementById('c-firstName').value,
+            lastName:        document.getElementById('c-lastName').value,
+            email:           document.getElementById('c-email').value,
+            phoneNumber:     document.getElementById('c-phone').value,
+            experienceYears: parseInt(document.getElementById('c-exp').value) || 0,
+            specialty:       document.getElementById('c-specialty').value,
+            passwordHash:    pass,
+            coachStatus:     'active'
+        };
+
+        fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        })
+        .then(r => {
+            if (r.ok) return r.json();
+            return r.json().then(err => { throw new Error(err.message || 'Registration failed.'); });
+        })
+        .then(() => {
+            msgEl.className = 'msg success';
+            msgEl.textContent = '✓ Registration successful! Redirecting to login...';
+            setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+        })
+        .catch(err => {
+            msgEl.className = 'msg error';
+            msgEl.textContent = err.message || 'Registration failed. Email may already be in use.';
+        });
+    }
+</script>
+</body>
+</html>

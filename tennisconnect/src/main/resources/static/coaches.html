@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TennisConnect — Find a Coach</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --green-dark: #0A1F0C;
+            --green-mid: #112A14;
+            --green-card: #1A3A1E;
+            --green-light: #EFF5EE;
+            --green-accent: #4CAF72;
+            --gold: #C8A951;
+        }
+        body { background: var(--green-light); font-family: 'Outfit', sans-serif; }
+
+        /* NAV */
+        nav { background: var(--green-mid); padding: 1rem 4rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(76,175,114,0.15); position: sticky; top: 0; z-index: 100; }
+        .nav-logo { font-family: 'Cinzel', serif; color: #fff; font-size: 1rem; font-weight: 600; letter-spacing: 4px; text-decoration: none; }
+        .nav-logo span { color: var(--green-accent); }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.45); text-decoration: none; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--green-accent); }
+        .nav-btn { background: var(--green-accent); color: var(--green-mid); padding: 0.45rem 1.3rem; font-size: 0.65rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; border: none; cursor: pointer; text-decoration: none; }
+
+        /* HERO BANNER */
+        .page-hero { background: var(--green-mid); padding: 3rem 4rem; position: relative; overflow: hidden; }
+        .page-hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(76,175,114,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(76,175,114,0.06) 1px, transparent 1px); background-size: 30px 30px; }
+        .page-hero-content { position: relative; }
+        .page-tag { font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.6rem; }
+        .page-tag::before { content: ''; width: 20px; height: 1px; background: var(--gold); }
+        .page-title { font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 700; color: #fff; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .page-desc { font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: rgba(255,255,255,0.45); }
+
+        /* SEARCH & FILTER */
+        .search-bar { background: #fff; padding: 1.5rem 4rem; border-bottom: 1px solid #d4e6d0; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+        .search-input-wrap { flex: 1; min-width: 200px; position: relative; }
+        .search-input-wrap::before { content: '🔍'; position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); font-size: 0.85rem; }
+        .search-input { width: 100%; padding: 0.65rem 1rem 0.65rem 2.2rem; border: 1px solid #d4e6d0; font-family: 'Outfit', sans-serif; font-size: 0.85rem; color: #0F2D12; outline: none; transition: border-color 0.3s; }
+        .search-input:focus { border-color: var(--green-accent); }
+        .filter-select { padding: 0.65rem 1rem; border: 1px solid #d4e6d0; font-family: 'Outfit', sans-serif; font-size: 0.82rem; color: #4A6B4D; outline: none; background: #fff; cursor: pointer; min-width: 160px; }
+        .search-btn { background: var(--green-mid); color: #fff; padding: 0.65rem 1.8rem; border: none; font-family: 'Outfit', sans-serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.3s; }
+        .search-btn:hover { background: #1A4520; }
+
+        /* MAIN CONTENT */
+        .main { padding: 2.5rem 4rem; }
+        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .results-count { font-family: 'Cinzel', serif; font-size: 0.9rem; color: #0F2D12; }
+        .results-count span { color: var(--green-accent); }
+        .sort-select { padding: 0.5rem 1rem; border: 1px solid #d4e6d0; font-family: 'Outfit', sans-serif; font-size: 0.78rem; color: #4A6B4D; outline: none; background: #fff; cursor: pointer; }
+
+        /* COACH GRID */
+        .coaches-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .coach-card { background: #fff; border: 1px solid #d4e6d0; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; }
+        .coach-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(15,45,18,0.1); }
+        .coach-avatar { height: 160px; background: var(--green-mid); display: flex; align-items: center; justify-content: center; font-size: 4rem; position: relative; }
+        .coach-avatar::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(17,42,20,0.3), transparent 50%); }
+        .coach-badge { position: absolute; top: 1rem; right: 1rem; background: var(--gold); color: var(--green-dark); font-size: 0.6rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 0.2rem 0.6rem; z-index: 1; }
+        .coach-info { padding: 1.3rem; }
+        .coach-name { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 600; color: #0F2D12; margin-bottom: 0.2rem; }
+        .coach-spec { color: var(--gold); font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 0.8rem; }
+        .coach-meta { display: flex; gap: 1rem; margin-bottom: 0.8rem; }
+        .coach-meta-item { font-size: 0.75rem; color: #4A6B4D; display: flex; align-items: center; gap: 0.3rem; }
+        .coach-divider { height: 1px; background: #d4e6d0; margin-bottom: 0.8rem; }
+        .coach-footer { display: flex; justify-content: space-between; align-items: center; }
+        .coach-rating { color: var(--gold); font-size: 0.85rem; display: flex; align-items: center; gap: 0.3rem; }
+        .coach-rating-num { font-size: 0.78rem; color: #4A6B4D; }
+        .book-btn { background: var(--green-mid); color: #fff; padding: 0.45rem 1.1rem; border: none; font-family: 'Outfit', sans-serif; font-size: 0.65rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; text-decoration: none; display: inline-block; transition: background 0.3s; }
+        .book-btn:hover { background: #1A4520; }
+
+        /* EMPTY STATE */
+        .empty { text-align: center; padding: 5rem 2rem; }
+        .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.3; }
+        .empty-title { font-family: 'Cinzel', serif; font-size: 1.2rem; color: #0F2D12; margin-bottom: 0.5rem; }
+        .empty-desc { font-size: 0.85rem; color: #4A6B4D; }
+
+        /* LOADING */
+        .loading { text-align: center; padding: 4rem; }
+        .loading-text { font-family: 'Cinzel', serif; font-size: 0.9rem; color: #4A6B4D; letter-spacing: 2px; }
+
+        /* FOOTER */
+        footer { background: var(--green-dark); padding: 1.5rem 4rem; display: flex; justify-content: space-between; align-items: center; margin-top: 4rem; }
+        .footer-logo { font-family: 'Cinzel', serif; color: rgba(255,255,255,0.5); font-size: 0.85rem; letter-spacing: 3px; }
+        .footer-copy { font-size: 0.7rem; color: rgba(255,255,255,0.2); }
+
+        @media (max-width: 900px) {
+            nav, .page-hero, .search-bar, .main { padding-left: 1.5rem; padding-right: 1.5rem; }
+            .coaches-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <a href="index.html" class="nav-logo">Tennis<span>Connect</span></a>
+    <ul class="nav-links">
+        <li><a href="coaches.html" class="active">Coaches</a></li>
+        <li><a href="index.html#how">How It Works</a></li>
+        <li><a href="login.html">Login</a></li>
+    </ul>
+    <a href="register.html" class="nav-btn">Get Started</a>
+</nav>
+
+<!-- HERO BANNER -->
+<div class="page-hero">
+    <div class="page-hero-grid"></div>
+    <div class="page-hero-content">
+        <div class="page-tag">Browse All Coaches</div>
+        <h1 class="page-title">Find Your Perfect Coach</h1>
+        <p class="page-desc">Browse our roster of certified tennis coaches and find the right match for your skill level and goals.</p>
+    </div>
+</div>
+
+<!-- SEARCH BAR -->
+<div class="search-bar">
+    <div class="search-input-wrap">
+        <input class="search-input" type="text" id="searchInput" placeholder="Search by name or specialty..." oninput="filterCoaches()">
+    </div>
+    <select class="filter-select" id="specialtyFilter" onchange="filterCoaches()">
+        <option value="">All Specialties</option>
+        <option>Beginner Training</option>
+        <option>Advanced Techniques</option>
+        <option>Competitive Training</option>
+        <option>Kids & Youth</option>
+        <option>Fitness & Conditioning</option>
+    </select>
+    <select class="filter-select" id="expFilter" onchange="filterCoaches()">
+        <option value="">Any Experience</option>
+        <option value="5">5+ Years</option>
+        <option value="10">10+ Years</option>
+        <option value="15">15+ Years</option>
+    </select>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+    <div class="results-header">
+        <div class="results-count">Showing <span id="countNum">0</span> coaches</div>
+        <select class="sort-select" id="sortSelect" onchange="filterCoaches()">
+            <option value="name">Sort by Name</option>
+            <option value="exp">Sort by Experience</option>
+        </select>
+    </div>
+    <div class="coaches-grid" id="coachesGrid">
+        <div class="loading"><div class="loading-text">Loading coaches...</div></div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-logo">TennisConnect</div>
+    <div class="footer-copy">© 2026 TennisConnect. All rights reserved.</div>
+</footer>
+
+<script>
+    const icons = ['🎾','🏆','💪','⭐','🎯','🏅','🥇','🎽'];
+    let allCoaches = [];
+
+    // Demo data if API is empty
+    const demoCoaches = [
+        { coachId: 1, firstName: 'Alex', lastName: 'Thompson', specialty: 'Advanced Techniques', experienceYears: 12 },
+        { coachId: 2, firstName: 'Sarah', lastName: 'Mitchell', specialty: 'Beginner Training', experienceYears: 8 },
+        { coachId: 3, firstName: 'David', lastName: 'Chen', specialty: 'Competitive Training', experienceYears: 15 },
+        { coachId: 4, firstName: 'Emma', lastName: 'Wilson', specialty: 'Kids & Youth', experienceYears: 6 },
+        { coachId: 5, firstName: 'James', lastName: 'Rodriguez', specialty: 'Fitness & Conditioning', experienceYears: 10 },
+        { coachId: 6, firstName: 'Lily', lastName: 'Park', specialty: 'Advanced Techniques', experienceYears: 9 },
+    ];
+
+    fetch('/api/coaches')
+        .then(r => r.json())
+        .then(data => {
+            allCoaches = data.length > 0 ? data : demoCoaches;
+            renderCoaches(allCoaches);
+        })
+        .catch(() => {
+            allCoaches = demoCoaches;
+            renderCoaches(allCoaches);
+        });
+
+    function renderCoaches(coaches) {
+        const grid = document.getElementById('coachesGrid');
+        document.getElementById('countNum').textContent = coaches.length;
+
+        if (coaches.length === 0) {
+            grid.innerHTML = `<div class="empty" style="grid-column:1/-1">
+                <div class="empty-icon">🎾</div>
+                <div class="empty-title">No coaches found</div>
+                <div class="empty-desc">Try adjusting your search or filters.</div>
+            </div>`;
+            return;
+        }
+
+        grid.innerHTML = coaches.map((c, i) => `
+            <div class="coach-card">
+                <div class="coach-avatar">
+                    ${icons[i % icons.length]}
+                    ${c.experienceYears >= 10 ? '<div class="coach-badge">Top Rated</div>' : ''}
+                </div>
+                <div class="coach-info">
+                    <div class="coach-name">${c.firstName} ${c.lastName}</div>
+                    <div class="coach-spec">${c.specialty || 'Tennis Coach'}</div>
+                    <div class="coach-meta">
+                        <div class="coach-meta-item">📅 ${c.experienceYears || 0} yrs exp.</div>
+                        <div class="coach-meta-item">📍 Vancouver</div>
+                    </div>
+                    <div class="coach-divider"></div>
+                    <div class="coach-footer">
+                        <div class="coach-rating">
+                            ★★★★★ <span class="coach-rating-num">(4.9)</span>
+                        </div>
+                        <a href="booking.html" class="book-btn">Book Now</a>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function filterCoaches() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const specialty = document.getElementById('specialtyFilter').value;
+        const minExp = parseInt(document.getElementById('expFilter').value) || 0;
+        const sort = document.getElementById('sortSelect').value;
+
+        let filtered = allCoaches.filter(c => {
+            const name = `${c.firstName} ${c.lastName}`.toLowerCase();
+            const spec = (c.specialty || '').toLowerCase();
+            const matchSearch = !search || name.includes(search) || spec.includes(search);
+            const matchSpec = !specialty || c.specialty === specialty;
+            const matchExp = (c.experienceYears || 0) >= minExp;
+            return matchSearch && matchSpec && matchExp;
+        });
+
+        if (sort === 'exp') filtered.sort((a, b) => (b.experienceYears || 0) - (a.experienceYears || 0));
+        else filtered.sort((a, b) => a.firstName.localeCompare(b.firstName));
+
+        renderCoaches(filtered);
+    }
+</script>
+</body>
+</html>

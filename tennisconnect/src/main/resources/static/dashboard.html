@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TennisConnect — Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --green-dark: #0A1F0C;
+            --green-mid: #112A14;
+            --green-card: #1A3A1E;
+            --green-light: #EFF5EE;
+            --green-accent: #4CAF72;
+            --gold: #C8A951;
+        }
+        body { background: var(--green-light); font-family: 'Outfit', sans-serif; display: flex; min-height: 100vh; }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 240px; background: var(--green-mid); min-height: 100vh;
+            display: flex; flex-direction: column; position: fixed; left: 0; top: 0; bottom: 0;
+            border-right: 1px solid rgba(76,175,114,0.15);
+        }
+        .sidebar-logo { padding: 1.8rem 1.5rem; border-bottom: 1px solid rgba(76,175,114,0.1); }
+        .sidebar-logo a { font-family: 'Cinzel', serif; color: #fff; font-size: 0.95rem; font-weight: 600; letter-spacing: 3px; text-decoration: none; }
+        .sidebar-logo a span { color: var(--green-accent); }
+        .sidebar-user { padding: 1.5rem; border-bottom: 1px solid rgba(76,175,114,0.1); display: flex; align-items: center; gap: 0.8rem; }
+        .user-avatar { width: 40px; height: 40px; background: var(--green-accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 700; color: var(--green-mid); flex-shrink: 0; }
+        .user-name { font-size: 0.82rem; font-weight: 500; color: #fff; }
+        .user-role { font-size: 0.65rem; color: rgba(255,255,255,0.35); letter-spacing: 1px; text-transform: uppercase; }
+        .sidebar-nav { flex: 1; padding: 1rem 0; }
+        .nav-section { font-size: 0.58rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 0.8rem 1.5rem 0.4rem; }
+        .nav-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.65rem 1.5rem; color: rgba(255,255,255,0.45); font-size: 0.82rem; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+        .nav-item:hover { background: rgba(76,175,114,0.08); color: #fff; }
+        .nav-item.active { background: rgba(76,175,114,0.12); color: #fff; border-right: 2px solid var(--green-accent); }
+        .nav-item-icon { font-size: 1rem; width: 20px; text-align: center; }
+        .sidebar-footer { padding: 1.2rem 1.5rem; border-top: 1px solid rgba(76,175,114,0.1); }
+        .logout-btn { display: flex; align-items: center; gap: 0.8rem; color: rgba(255,255,255,0.3); font-size: 0.78rem; cursor: pointer; text-decoration: none; transition: color 0.3s; }
+        .logout-btn:hover { color: #ff6b6b; }
+
+        /* MAIN */
+        .main { margin-left: 240px; flex: 1; padding: 2.5rem; }
+
+        /* TOP BAR */
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .page-title { font-family: 'Cinzel', serif; font-size: 1.4rem; font-weight: 700; color: #0F2D12; letter-spacing: 1px; }
+        .topbar-actions { display: flex; gap: 0.8rem; align-items: center; }
+        .btn-gold { background: var(--gold); color: var(--green-dark); padding: 0.55rem 1.3rem; border: none; font-family: 'Outfit', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-outline { background: transparent; color: #0F2D12; padding: 0.55rem 1.3rem; border: 1px solid #d4e6d0; font-family: 'Outfit', sans-serif; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; }
+
+        /* STAT CARDS */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: #fff; padding: 1.3rem; border: 1px solid #d4e6d0; position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; }
+        .stat-card.green::before { background: var(--green-accent); }
+        .stat-card.gold::before { background: var(--gold); }
+        .stat-card.blue::before { background: #4A9FCA; }
+        .stat-card.red::before { background: #CA4A4A; }
+        .stat-label { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: #4A6B4D; margin-bottom: 0.5rem; }
+        .stat-value { font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 700; color: #0F2D12; line-height: 1; margin-bottom: 0.3rem; }
+        .stat-sub { font-size: 0.72rem; color: #8aab8c; }
+
+        /* GRID LAYOUT */
+        .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+
+        /* CARDS */
+        .card { background: #fff; border: 1px solid #d4e6d0; }
+        .card-header { padding: 1rem 1.3rem; border-bottom: 1px solid #d4e6d0; display: flex; justify-content: space-between; align-items: center; }
+        .card-title { font-family: 'Cinzel', serif; font-size: 0.88rem; font-weight: 600; color: #0F2D12; }
+        .card-action { font-size: 0.7rem; color: var(--green-accent); cursor: pointer; text-decoration: none; }
+        .card-body { padding: 1rem 1.3rem; }
+
+        /* BOOKINGS */
+        .booking-item { display: flex; align-items: center; gap: 1rem; padding: 0.9rem 0; border-bottom: 1px solid #f0f8ee; }
+        .booking-item:last-child { border-bottom: none; }
+        .booking-icon { width: 40px; height: 40px; background: #f0f8ee; border: 1px solid #d4e6d0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+        .booking-info { flex: 1; }
+        .booking-title { font-size: 0.85rem; font-weight: 500; color: #0F2D12; margin-bottom: 0.2rem; }
+        .booking-meta { font-size: 0.72rem; color: #4A6B4D; }
+        .booking-status { font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; padding: 0.2rem 0.6rem; font-weight: 600; }
+        .status-confirmed { background: #efe; color: #2a6; border: 1px solid #cfc; }
+        .status-pending { background: #fff8e0; color: #a07828; border: 1px solid #f0dfa0; }
+        .status-completed { background: #f0f0f0; color: #666; border: 1px solid #ddd; }
+
+        /* COACHES LIST */
+        .coach-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem 0; border-bottom: 1px solid #f0f8ee; }
+        .coach-item:last-child { border-bottom: none; }
+        .coach-avatar-sm { width: 38px; height: 38px; background: var(--green-mid); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+        .coach-item-info { flex: 1; }
+        .coach-item-name { font-size: 0.82rem; font-weight: 500; color: #0F2D12; margin-bottom: 0.1rem; }
+        .coach-item-spec { font-size: 0.7rem; color: #4A6B4D; }
+        .coach-item-rating { font-size: 0.78rem; color: var(--gold); }
+
+        /* QUICK ACTIONS */
+        .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.5rem; }
+        .action-btn { background: #fff; border: 1px solid #d4e6d0; padding: 1rem; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+        .action-btn:hover { background: #f0f8ee; border-color: var(--green-accent); }
+        .action-icon { font-size: 1.4rem; }
+        .action-label { font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase; color: #4A6B4D; text-align: center; }
+
+        /* WELCOME BANNER */
+        .welcome-banner { background: var(--green-mid); padding: 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
+        .welcome-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(76,175,114,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(76,175,114,0.06) 1px, transparent 1px); background-size: 20px 20px; }
+        .welcome-text { position: relative; }
+        .welcome-greeting { font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 0.4rem; }
+        .welcome-name { font-family: 'Cinzel', serif; font-size: 1.3rem; font-weight: 700; color: #fff; }
+        .welcome-sub { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-top: 0.2rem; }
+        .welcome-emoji { font-size: 2.5rem; position: relative; }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <a href="index.html">Tennis<span>Connect</span></a>
+    </div>
+    <div class="sidebar-user">
+        <div>
+            <div class="user-avatar" id="userInitials">...</div>
+            <div>
+                <div class="user-name" id="sidebarName">Loading...</div>
+                <div class="user-role">Member</div>
+            </div>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">Main</div>
+        <a href="#" class="nav-item active"><span class="nav-item-icon">📊</span> Dashboard</a>
+        <a href="coaches.html" class="nav-item"><span class="nav-item-icon">🎾</span> Find Coaches</a>
+        <a href="#" class="nav-item"><span class="nav-item-icon">📅</span> My Bookings</a>
+        <a href="#" class="nav-item"><span class="nav-item-icon">⭐</span> My Reviews</a>
+        <div class="nav-section">Account</div>
+        <a href="#" class="nav-item"><span class="nav-item-icon">👤</span> Profile</a>
+        <a href="#" class="nav-item"><span class="nav-item-icon">⚙️</span> Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="login.html" class="logout-btn"><span>🚪</span> Sign Out</a>
+    </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <div class="page-title">Dashboard</div>
+        <div class="topbar-actions">
+            <a href="coaches.html" class="btn-gold">Book a Session</a>
+            <button class="btn-outline">View All Orders</button>
+        </div>
+    </div>
+
+    <!-- WELCOME BANNER -->
+    <div class="welcome-banner">
+        <div class="welcome-grid"></div>
+        <div class="welcome-text">
+            <div class="welcome-greeting">Welcome Back</div>
+            <div class="welcome-name" id="welcomeName">Loading...</div>
+            <div class="welcome-sub">You have 2 upcoming sessions this week.</div>
+        </div>
+        <div class="welcome-emoji">🎾</div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+        <div class="stat-card green">
+            <div class="stat-label">Total Sessions</div>
+            <div class="stat-value" id="statTotal">0</div>
+            <div class="stat-sub">All time bookings</div>
+        </div>
+        <div class="stat-card gold">
+            <div class="stat-label">Upcoming</div>
+            <div class="stat-value" id="statUpcoming">0</div>
+            <div class="stat-sub">Sessions this week</div>
+        </div>
+        <div class="stat-card blue">
+            <div class="stat-label">Coaches</div>
+            <div class="stat-value">3</div>
+            <div class="stat-sub">Coaches trained with</div>
+        </div>
+        <div class="stat-card red">
+            <div class="stat-label">Reviews</div>
+            <div class="stat-value">8</div>
+            <div class="stat-sub">Reviews submitted</div>
+        </div>
+    </div>
+
+    <!-- CONTENT GRID -->
+    <div class="content-grid">
+
+        <!-- LEFT: BOOKINGS -->
+        <div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Recent Bookings</div>
+                    <a href="#" class="card-action">View All →</a>
+                </div>
+                <div class="card-body" id="bookingsList">
+
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+            <!-- QUICK ACTIONS -->
+            <div class="card">
+                <div class="card-header"><div class="card-title">Quick Actions</div></div>
+                <div class="card-body">
+                    <div class="quick-actions">
+                        <a href="coaches.html" class="action-btn"><div class="action-icon">🔍</div><div class="action-label">Find Coach</div></a>
+                        <a href="#" class="action-btn"><div class="action-icon">📅</div><div class="action-label">My Bookings</div></a>
+                        <a href="#" class="action-btn"><div class="action-icon">⭐</div><div class="action-label">Leave Review</div></a>
+                        <a href="#" class="action-btn"><div class="action-icon">👤</div><div class="action-label">Edit Profile</div></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MY COACHES -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">My Coaches</div>
+                    <a href="coaches.html" class="card-action">Browse →</a>
+                </div>
+                <div class="card-body" id="myCoachesList">
+                    <div style="text-align:center;padding:1rem;color:#8aab8c;font-size:0.82rem;">No coaches yet.</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<script>
+    async function init() {
+        try {
+            const res = await fetch('/api/auth/me');
+            const data = await res.json();
+            if (!data.loggedIn || data.role !== 'user') {
+                window.location.href = 'login.html';
+                return;
+            }
+            const name = data.name;
+            document.getElementById('welcomeName').textContent = `Good to see you, ${name}! 👋`;
+            document.getElementById('userInitials').textContent = name.split(' ').map(n => n[0]).join('');
+            document.getElementById('sidebarName').textContent = name;
+            loadOrders(data.id);
+        } catch(e) {
+            window.location.href = 'login.html';
+        }
+    }
+
+    async function loadOrders(userId) {
+        try {
+            const res = await fetch(`/api/orders/user/${userId}`);
+            const orders = await res.json();
+            const list = document.getElementById('bookingsList');
+
+            document.getElementById('statTotal').textContent = orders.length;
+            document.getElementById('statUpcoming').textContent =
+                orders.filter(o => o.orderStatus === 'pending' || o.orderStatus === 'confirmed').length;
+
+            if (orders.length === 0) {
+                list.innerHTML = `<div style="text-align:center;padding:2rem;color:#8aab8c;font-size:0.85rem;">
+                    No bookings yet. <a href="coaches.html" style="color:var(--green-accent);">Book a session now</a>
+                </div>`;
+                return;
+            }
+
+            const icons = ['🎾','🏆','💪','⭐','🎯','🏅'];
+            list.innerHTML = orders.slice(0, 5).map((o, i) => `
+                <div class="booking-item">
+                    <div class="booking-icon">${icons[i % icons.length]}</div>
+                    <div class="booking-info">
+                        <div class="booking-title">
+                            ${o.course ? o.course.courseName + ' — ' + (o.course.coach ? o.course.coach.firstName + ' ' + o.course.coach.lastName : '') : 'Order #' + o.orderId}
+                        </div>
+                        <div class="booking-meta">
+                            📅 ${o.orderTime ? new Date(o.orderTime).toLocaleString('en-US', {year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', hour12:true}) : 'N/A'}
+                            ${o.course && o.course.court ? ' · ' + o.course.court.courtName : ''}
+                        </div>
+                    </div>
+                    <span class="booking-status status-${o.orderStatus === 'confirmed' ? 'confirmed' : o.orderStatus === 'completed' ? 'completed' : 'pending'}">
+                        ${o.orderStatus === 'confirmed' ? 'Confirmed' : o.orderStatus === 'completed' ? 'Completed' : 'Pending'}
+                    </span>
+                </div>
+            `).join('');
+        } catch(e) {
+            console.error('Failed to load orders', e);
+        }
+    }
+
+    async function logout() {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        localStorage.clear();
+        window.location.href = 'login.html';
+    }
+
+    init();
+</script>
+</body>
+</html>
