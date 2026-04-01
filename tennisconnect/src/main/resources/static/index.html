@@ -175,10 +175,14 @@
         <li><a href="coaches.html">Coaches</a></li>
         <li><a href="courts.html">Courts</a></li>
         <li><a href="#how">How It Works</a></li>
-        <li><a href="login.html">Login</a></li>
+        <li id="navLogin"><a href="login.html">Login</a></li>
     </ul>
-    <a href="register.html" class="nav-btn" id="navGetStarted">Get Started</a>
-    <a href="#" onclick="logout()" class="nav-btn" id="navLogout" style="display:none;background:var(--green-accent);color:var(--green-mid);font-weight:600;">Sign Out</a>
+    <div id="navUserArea" style="display:flex;align-items:center;gap:0.8rem;">
+        <a href="register.html" class="nav-btn" id="navGetStarted">Get Started</a>
+        <a href="#" id="navUserName" class="nav-btn" style="display:none;background:var(--green-accent);color:var(--green-mid);font-weight:600;"></a>
+        <a href="#" onclick="logout()" style="display:none;font-size:0.65rem;color:rgba(255,255,255,0.6);text-decoration:none;letter-spacing:1px;" id="navLogout">Sign Out</a>
+    </div>
+
 </nav>
 
 <!-- HERO -->
@@ -190,10 +194,10 @@
         <h1 class="hero-h1">Your Way,<br><span>Your Coach,</span><br>Your Court</h1>
         <p class="hero-desc">choose a coach or a court and book your perfect session in minutes.</p>
 
-        <div class="hero-stats">
-            <div><div class="stat-num">50+</div><div class="stat-lbl">Expert Coaches</div></div>
-            <div><div class="stat-num">98%</div><div class="stat-lbl">Satisfaction</div></div>
-            <div><div class="stat-num">500+</div><div class="stat-lbl">Sessions Booked</div></div>
+        <div class="hero-stats" id="heroStats">
+            <div><div class="stat-num" id="statCoachCount">—</div><div class="stat-lbl">Expert Coaches</div></div>
+            <div><div class="stat-num" id="statCourtsCount">—</div><div class="stat-lbl">Premium Courts</div></div>
+            <div><div class="stat-num" id="statSessionsCount">—</div><div class="stat-lbl">Sessions Booked</div></div>
         </div>
     </div>
 </section>
@@ -298,33 +302,40 @@
 
 <script>
     async function checkAuth() {
-        try {
-            const res = await fetch('/api/auth/me');
-            const data = await res.json();
+    try {
+        const res = await fetch('/api/auth/me');
+        const data = await res.json();
 
-            if (data.loggedIn) {
-                // 隱藏 Login 和 Get Started
-                document.getElementById('navLogin').style.display = 'none';
-                document.getElementById('navGetStarted').style.display = 'none';
+        if (data.loggedIn) {
+            // Hide Login and Get Started
+            const navLogin = document.getElementById('navLogin');
+            if (navLogin) navLogin.style.display = 'none';
+            document.getElementById('navGetStarted').style.display = 'none';
 
-                // 顯示 Dashboard 和 Sign Out
-                document.getElementById('navDashboard').style.display = 'block';
-                document.getElementById('navLogout').style.display = 'inline-block';
+            // Show user name replacing Get Started
+            const userNameBtn = document.getElementById('navUserName');
+            userNameBtn.style.display = 'inline-block';
+            userNameBtn.textContent = data.name.split(' ')[0];
+            userNameBtn.href = data.role === 'coach' ? 'coach-dashboard.html' : 'dashboard.html';
 
-                // 根據角色設定 Dashboard 連結
-                const link = document.getElementById('navDashboardLink');
-                if (data.role === 'coach') {
-                    link.href = 'coach-dashboard.html';
-                    link.textContent = `${data.name.split(' ')[0]}'s Dashboard`;
-                } else {
-                    link.href = 'dashboard.html';
-                    link.textContent = `${data.name.split(' ')[0]}'s Dashboard`;
-                }
+            // Show Sign Out
+            document.getElementById('navLogout').style.display = 'inline-block';
+
+            // Update Dashboard link
+            const link = document.getElementById('navDashboardLink');
+            if (link) {
+                link.href = data.role === 'coach' ? 'coach-dashboard.html' : 'dashboard.html';
+                link.textContent = `${data.name.split(' ')[0]}'s Dashboard`;
             }
-        } catch(e) {
-            console.error('Auth check failed', e);
+
+            // Show Dashboard nav item
+            const navDashboard = document.getElementById('navDashboard');
+            if (navDashboard) navDashboard.style.display = 'block';
         }
+    } catch(e) {
+        console.error('Auth check failed', e);
     }
+}
 
     async function logout() {
         await fetch('/api/auth/logout', { method: 'POST' });
@@ -332,7 +343,28 @@
         window.location.href = 'index.html';
     }
 
+    // Load real stats
+    async function loadStats() {
+        try {
+            const [coachRes, courtRes, orderRes] = await Promise.all([
+                fetch('/api/coaches'),
+                fetch('/api/courts'),
+                fetch('/api/orders')
+            ]);
+            const coaches = await coachRes.json();
+            const courts = await courtRes.json();
+            const orders = await orderRes.json();
+
+            document.getElementById('statCoachCount').textContent = coaches.length + '+';
+            document.getElementById('statCourtsCount').textContent = courts.length + '+';
+            document.getElementById('statSessionsCount').textContent = orders.length + '+';
+        } catch(e) {
+            console.error('Failed to load stats', e);
+        }
+    }
+
     checkAuth();
+    loadStats();
 </script>
 </body>
 </html>
