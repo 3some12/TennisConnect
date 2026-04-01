@@ -13,4 +13,5 @@ public class Court {
     private String courtName;
     private String courtLocation;
     private String courtStatus;
+    private String surface;
 }

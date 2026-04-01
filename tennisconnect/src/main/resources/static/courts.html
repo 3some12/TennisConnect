@@ -168,23 +168,23 @@
     let allCourts = [];
 
     fetch('/api/courts')
-        .then(r => r.json())
-        .then(data => {
-            allCourts = data.length > 0 ? data.map(c => ({
-                courtId: c.courtId,
-                courtName: c.courtName,
-                courtLocation: c.courtLocation || 'TennisConnect',
-                surface: 'Hard',
-                status: c.courtStatus === 'available' ? 'available' : 'busy',
-                coaches: Math.floor(Math.random() * 4) + 2,
-                features: ['Floodlit', 'Changing Rooms']
-            })) : demoCourts;
-            renderCourts(allCourts);
-        })
-        .catch(() => {
-            allCourts = demoCourts;
-            renderCourts(allCourts);
-        });
+    .then(r => r.json())
+    .then(data => {
+        allCourts = data.map(c => ({
+            courtId: c.courtId,
+            courtName: c.courtName,
+            courtLocation: c.courtLocation || 'TennisConnect',
+            surface: c.surface || 'Hard',
+            status: c.courtStatus === 'available' ? 'available' : 'busy',
+            coaches: Math.floor(Math.random() * 4) + 2,
+            features: ['Floodlit', 'Changing Rooms']
+        }));
+        renderCourts(allCourts);
+    })
+    .catch(() => {
+        allCourts = demoCourts;
+        renderCourts(allCourts);
+    });
 
     function getSurfaceClass(surface) {
         const map = { 'Hard':'surface-hard', 'Clay':'surface-clay', 'Grass':'surface-grass', 'Indoor':'surface-indoor' };
