@@ -438,46 +438,63 @@
     }
 
     // Step 2 — 載入真實課程
-    async function renderStep2() {
-        const list = document.getElementById('step2List');
-        try {
-            let courses = [];
-            if (bookingMode === 'coach') {
-                document.getElementById('step2Title').textContent = 'Select a Court & Course';
-                const res = await fetch(`/api/courses/coach/${selectedCoach.id}`);
-                courses = await res.json();
-            } else {
-                document.getElementById('step2Title').textContent = 'Select a Coach & Course';
-                const res = await fetch(`/api/courses/court/${selectedCourt.id}`);
-                courses = await res.json();
-            }
+  async function renderStep2() {
+    const list = document.getElementById('step2List');
+    try {
+        let courses = [];
+        if (bookingMode === 'coach') {
+            document.getElementById('step2Title').textContent = 'Select a Court & Course';
+            const res = await fetch(`/api/courses/coach/${selectedCoach.id}`);
+            courses = await res.json();
 
             if (courses.length === 0) {
-                list.innerHTML = `<div style="text-align:center;padding:2rem;color:#8aab8c;">No courses available.</div>`;
+                list.innerHTML = `<div style="text-align:center;padding:2rem;color:#8aab8c;">No courses available for this coach.</div>`;
+                return;
+            }
+
+            list.innerHTML = courses.map(c => `
+                <div class="list-item" onclick="selectCourse(${c.courseId},'${c.courseName}',this)"
+                     data-coach="${selectedCoach.name}"
+                     data-court="${c.court ? c.court.courtName : ''}">
+                    <div class="list-item-icon">🏟️</div>
+                    <div class="list-item-info">
+                        <div class="list-item-name">${c.court ? c.court.courtName : 'Unknown Court'}</div>
+                        <div class="list-item-sub">${c.courseName} · $${c.coursePrice}</div>
+                        <div class="list-item-badge">${c.courseLevel || ''}</div>
+                    </div>
+                    <div class="list-item-check"></div>
+                </div>
+            `).join('');
+
+        } else {
+            document.getElementById('step2Title').textContent = 'Select a Coach & Course';
+            const res = await fetch(`/api/courses/court/${selectedCourt.id}`);
+            courses = await res.json();
+
+            if (courses.length === 0) {
+                list.innerHTML = `<div style="text-align:center;padding:2rem;color:#8aab8c;">No courses available for this court.</div>`;
                 return;
             }
 
             list.innerHTML = courses.map(c => `
                 <div class="list-item" onclick="selectCourse(${c.courseId},'${c.courseName}',this)"
                      data-coach="${c.coach ? c.coach.firstName + ' ' + c.coach.lastName : ''}"
-                     data-court="${c.court ? c.court.courtName : ''}">
+                     data-court="${selectedCourt.name}">
                     <div class="list-item-icon">🎾</div>
                     <div class="list-item-info">
-                        <div class="list-item-name">${c.courseName}</div>
-                        <div class="list-item-sub">
-                            ${bookingMode === 'coach'
-                                ? (c.court ? c.court.courtName : '') + ' · $' + c.coursePrice
-                                : (c.coach ? c.coach.firstName + ' ' + c.coach.lastName : '') + ' · $' + c.coursePrice}
-                        </div>
+                        <div class="list-item-name">${c.coach ? c.coach.firstName + ' ' + c.coach.lastName : 'Unknown Coach'}</div>
+                        <div class="list-item-sub">${c.courseName} · $${c.coursePrice}</div>
                         <div class="list-item-badge">${c.courseLevel || ''}</div>
                     </div>
                     <div class="list-item-check"></div>
                 </div>
             `).join('');
-        } catch(e) {
-            console.error('Failed to load courses', e);
         }
+    } catch(e) {
+        console.error('Failed to load courses', e);
+        list.innerHTML = `<div style="text-align:center;padding:2rem;color:#8aab8c;">Failed to load courses.</div>`;
     }
+}
 
     function selectCourse(id, name, el) {
         selectedCourse = { id, name };
@@ -603,34 +620,50 @@
     }
     currentUserId = data.id;
 
-    // 檢查 URL 參數
-    const urlParams = new URLSearchParams(window.location.search);
-    const modeParam = urlParams.get('mode');
-    const courtParam = urlParams.get('court');
 
-    if (modeParam === 'court') {
-        // 自動切換到 Court First 模式
-        setMode('court');
+    // Check URL params
+const urlParams = new URLSearchParams(window.location.search);
+const modeParam = urlParams.get('mode');
+const courtParam = urlParams.get('court');
+const coachParam = urlParams.get('coach');
 
-        // 如果有 court ID，自動選取
-        if (courtParam) {
-            setTimeout(async () => {
-                const items = document.querySelectorAll('#courtFirstItems .list-item');
-                const res = await fetch('/api/courts');
-                const courts = await res.json();
-                const court = courts.find(c => c.courtId == courtParam);
-                if (court) {
-                    items.forEach(item => {
-                        if (item.querySelector('.list-item-name').textContent === court.courtName) {
-                            item.click();
-                        }
-                    });
+if (modeParam === 'coach' && coachParam) {
+    // Coming from coaches.html - auto select coach
+    setMode('coach');
+    setTimeout(async () => {
+        const res = await fetch('/api/coaches');
+        const coaches = await res.json();
+        const coach = coaches.find(c => c.coachId == coachParam);
+        if (coach) {
+            const items = document.querySelectorAll('#coachListItems .list-item');
+            items.forEach(item => {
+                if (item.querySelector('.list-item-name').textContent === `${coach.firstName} ${coach.lastName}`) {
+                    item.click();
                 }
-            }, 500);
+            });
         }
-    } else {
-        renderCoachList();
-    }
+    }, 500);
+} else if (modeParam === 'court' && courtParam) {
+    // Coming from courts.html - auto select court
+    setMode('court');
+    setTimeout(async () => {
+        const res = await fetch('/api/courts');
+        const courts = await res.json();
+        const court = courts.find(c => c.courtId == courtParam);
+        if (court) {
+            const items = document.querySelectorAll('#courtFirstItems .list-item');
+            items.forEach(item => {
+                if (item.querySelector('.list-item-name').textContent === court.courtName) {
+                    item.click();
+                }
+            });
+        }
+    }, 500);
+} else {
+    renderCoachList();
+}
+
+
 }
 
 
