@@ -138,7 +138,7 @@
         <a href="#" class="nav-item"><span class="nav-item-icon">⚙️</span> Settings</a>
     </nav>
     <div class="sidebar-footer">
-        <a href="login.html" class="logout-btn"><span>🚪</span> Sign Out</a>
+        <a href="#" onclick="logout()" class="logout-btn"><span>🚪</span> Sign Out</a>
     </div>
 </aside>
 
@@ -339,7 +339,7 @@
     async function logout() {
         await fetch('/api/auth/logout', { method: 'POST' });
         localStorage.clear();
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
     }
 
     init();

@@ -288,7 +288,7 @@
                 <span class="summary-val empty" id="sumTime">Not selected</span>
             </div>
         </div>
-        <div class="price-card">
+        <div class="price-card" id="priceCard" style="display:none;">
             <div class="price-row"><span>Session (60 min)</span><span id="priceSession">$80.00</span></div>
             <div class="price-row"><span>Platform fee</span><span>$5.00</span></div>
             <div class="price-total"><span>Total</span><span id="priceTotal">$85.00</span></div>
@@ -306,7 +306,6 @@
         <a href="coaches.html" class="btn-back" style="text-decoration:none;display:inline-block;padding:0.8rem 1.5rem;">Book Another</a>
     </div>
 </div>
-
 <script>
     let bookingMode = 'coach';
     let selectedCoach = null;
@@ -320,10 +319,8 @@
     const timeSlots = ['8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM',
                        '1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM'];
 
-    // 設定最早日期為今天
     document.getElementById('dateInput').min = new Date().toISOString().split('T')[0];
 
-    // 初始化 — 檢查登入狀態
     async function init() {
         const res = await fetch('/api/auth/me');
         const data = await res.json();
@@ -332,40 +329,71 @@
             return;
         }
         currentUserId = data.id;
-        renderCoachList();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const modeParam = urlParams.get('mode');
+        const courtParam = urlParams.get('court');
+        const coachParam = urlParams.get('coach');
+
+        if (modeParam === 'coach' && coachParam) {
+            setMode('coach');
+            setTimeout(async () => {
+                const r = await fetch('/api/coaches');
+                const coaches = await r.json();
+                const coach = coaches.find(c => c.coachId == coachParam);
+                if (coach) {
+                    document.querySelectorAll('#coachListItems .list-item').forEach(item => {
+                        if (item.querySelector('.list-item-name').textContent === `${coach.firstName} ${coach.lastName}`) {
+                            item.click();
+                        }
+                    });
+                }
+            }, 500);
+        } else if (modeParam === 'court' && courtParam) {
+            setMode('court');
+            setTimeout(async () => {
+                const r = await fetch('/api/courts');
+                const courts = await r.json();
+                const court = courts.find(c => c.courtId == courtParam);
+                if (court) {
+                    document.querySelectorAll('#courtFirstItems .list-item').forEach(item => {
+                        if (item.querySelector('.list-item-name').textContent === court.courtName) {
+                            item.click();
+                        }
+                    });
+                }
+            }, 500);
+        } else {
+            renderCoachList();
+        }
     }
 
-    // 切換模式
     function setMode(mode) {
-    bookingMode = mode;
-    selectedCoach = null;
-    selectedCourt = null;
-    selectedCourse = null;
-    document.getElementById('nextStep1').disabled = true;
-    document.getElementById('modeCoach').classList.toggle('active', mode === 'coach');
-    document.getElementById('modeCourt').classList.toggle('active', mode === 'court');
-    document.getElementById('coachList').style.display = mode === 'coach' ? 'block' : 'none';
-    document.getElementById('courtFirstList').style.display = mode === 'court' ? 'block' : 'none';
-
-    // Update step labels based on mode
-    if (mode === 'court') {
-        document.getElementById('sl1').textContent = 'Court';
-        document.getElementById('sl2').textContent = 'Coach';
-    } else {
-        document.getElementById('sl1').textContent = 'Coach';
-        document.getElementById('sl2').textContent = 'Court';
+        bookingMode = mode;
+        selectedCoach = null;
+        selectedCourt = null;
+        selectedCourse = null;
+        document.getElementById('nextStep1').disabled = true;
+        document.getElementById('modeCoach').classList.toggle('active', mode === 'coach');
+        document.getElementById('modeCourt').classList.toggle('active', mode === 'court');
+        document.getElementById('coachList').style.display = mode === 'coach' ? 'block' : 'none';
+        document.getElementById('courtFirstList').style.display = mode === 'court' ? 'block' : 'none';
+        if (mode === 'court') {
+            document.getElementById('sl1').textContent = 'Court';
+            document.getElementById('sl2').textContent = 'Coach';
+        } else {
+            document.getElementById('sl1').textContent = 'Coach';
+            document.getElementById('sl2').textContent = 'Court';
+        }
+        if (mode === 'coach') renderCoachList();
+        else renderCourtList();
     }
 
-    if (mode === 'coach') renderCoachList();
-    else renderCourtList();
-}
-
-    // 載入真實教練列表
     async function renderCoachList() {
         try {
             const res = await fetch('/api/coaches');
             const coaches = await res.json();
-            const icons = ['🎾','🏆','💪','⭐','🎯','🏅'];
+            const icons = ['🎾','🏆','💪','⭐','🎯','🏅','🥇','🎽','🏸'];
             document.getElementById('coachListItems').innerHTML = coaches.map((c, i) => `
                 <div class="list-item" onclick="selectCoach(${c.coachId},'${c.firstName} ${c.lastName}',this)">
                     <div class="list-item-icon">${icons[i % icons.length]}</div>
@@ -381,28 +409,27 @@
         }
     }
 
-    // 載入真實球場列表
     async function renderCourtList() {
-    try {
-        const res = await fetch('/api/courts');
-        const courts = await res.json();
-        const icons = ['🏟️','🎾','🌿','⭐','💎','🏅'];
-        document.getElementById('courtFirstItems').innerHTML = courts.map((c, i) => `
-            <div class="list-item" onclick="selectCourtFirst(${c.courtId},'${c.courtName}',this)">
-                <div class="list-item-icon">${icons[i % icons.length]}</div>
-                <div class="list-item-info">
-                    <div class="list-item-name">${c.courtName}</div>
-                    <div class="list-item-sub">${c.courtLocation || 'TennisConnect'} · ${c.courtStatus === 'available' ? 'Available' : 'Busy'}</div>
+        try {
+            const res = await fetch('/api/courts');
+            const courts = await res.json();
+            const icons = ['🏟️','🎾','🌿','⭐','💎','🏅','🏟️','🎾'];
+            document.getElementById('courtFirstItems').innerHTML = courts.map((c, i) => `
+                <div class="list-item" onclick="selectCourtFirst(${c.courtId},'${c.courtName}',this)">
+                    <div class="list-item-icon">${icons[i % icons.length]}</div>
+                    <div class="list-item-info">
+                        <div class="list-item-name">${c.courtName}</div>
+                        <div class="list-item-sub">${c.courtLocation || 'TennisConnect'} · Available</div>
+                    </div>
+                    <div class="list-item-check"></div>
                 </div>
-                <div class="list-item-check"></div>
-            </div>
-        `).join('');
-    } catch(e) {
-        console.error('Failed to load courts', e);
-        document.getElementById('courtFirstItems').innerHTML =
-            `<div style="text-align:center;padding:2rem;color:#8aab8c;">Failed to load courts.</div>`;
+            `).join('');
+        } catch(e) {
+            console.error('Failed to load courts', e);
+            document.getElementById('courtFirstItems').innerHTML =
+                `<div style="text-align:center;padding:2rem;color:#8aab8c;">Failed to load courts.</div>`;
+        }
     }
-}
 
     function selectCoach(id, name, el) {
         selectedCoach = { id, name };
@@ -437,73 +464,65 @@
         if (step === 4) renderConfirm();
     }
 
-    // Step 2 — 載入真實課程
-  async function renderStep2() {
-    const list = document.getElementById('step2List');
-    try {
-        let courses = [];
-        if (bookingMode === 'coach') {
-            document.getElementById('step2Title').textContent = 'Select a Court & Course';
-            const res = await fetch(`/api/courses/coach/${selectedCoach.id}`);
-            courses = await res.json();
-
-            if (courses.length === 0) {
-                list.innerHTML = `<div style="text-align:center;padding:2rem;color:#8aab8c;">No courses available for this coach.</div>`;
-                return;
-            }
-
-            list.innerHTML = courses.map(c => `
-                <div class="list-item" onclick="selectCourse(${c.courseId},'${c.courseName}',this)"
-                     data-coach="${selectedCoach.name}"
-                     data-court="${c.court ? c.court.courtName : ''}">
-                    <div class="list-item-icon">🏟️</div>
-                    <div class="list-item-info">
-                        <div class="list-item-name">${c.court ? c.court.courtName : 'Unknown Court'}</div>
-                        <div class="list-item-sub">${c.courseName} · $${c.coursePrice}</div>
-                        <div class="list-item-badge">${c.courseLevel || ''}</div>
+    async function renderStep2() {
+        const list = document.getElementById('step2List');
+        try {
+            let courses = [];
+            if (bookingMode === 'coach') {
+                document.getElementById('step2Title').textContent = 'Select a Court & Course';
+                const res = await fetch(`/api/courses/coach/${selectedCoach.id}`);
+                courses = await res.json();
+                if (courses.length === 0) {
+                    list.innerHTML = `<div style="text-align:center;padding:2rem;color:#8aab8c;">No courses available for this coach.</div>`;
+                    return;
+                }
+                list.innerHTML = courses.map(c => `
+                    <div class="list-item" onclick="selectCourse(${c.courseId},'${c.courseName}',${c.coursePrice},this)"
+                         data-coach="${selectedCoach.name}"
+                         data-court="${c.court ? c.court.courtName : ''}">
+                        <div class="list-item-icon">🏟️</div>
+                        <div class="list-item-info">
+                            <div class="list-item-name">${c.court ? c.court.courtName : 'Unknown Court'}</div>
+                            <div class="list-item-sub">${c.courseName} · $${c.coursePrice}</div>
+                            <div class="list-item-badge">${c.courseLevel || ''}</div>
+                        </div>
+                        <div class="list-item-check"></div>
                     </div>
-                    <div class="list-item-check"></div>
-                </div>
-            `).join('');
-
-        } else {
-            document.getElementById('step2Title').textContent = 'Select a Coach & Course';
-            const res = await fetch(`/api/courses/court/${selectedCourt.id}`);
-            courses = await res.json();
-
-            if (courses.length === 0) {
-                list.innerHTML = `<div style="text-align:center;padding:2rem;color:#8aab8c;">No courses available for this court.</div>`;
-                return;
-            }
-
-            list.innerHTML = courses.map(c => `
-                <div class="list-item" onclick="selectCourse(${c.courseId},'${c.courseName}',this)"
-                     data-coach="${c.coach ? c.coach.firstName + ' ' + c.coach.lastName : ''}"
-                     data-court="${selectedCourt.name}">
-                    <div class="list-item-icon">🎾</div>
-                    <div class="list-item-info">
-                        <div class="list-item-name">${c.coach ? c.coach.firstName + ' ' + c.coach.lastName : 'Unknown Coach'}</div>
-                        <div class="list-item-sub">${c.courseName} · $${c.coursePrice}</div>
-                        <div class="list-item-badge">${c.courseLevel || ''}</div>
+                `).join('');
+            } else {
+                document.getElementById('step2Title').textContent = 'Select a Coach & Course';
+                const res = await fetch(`/api/courses/court/${selectedCourt.id}`);
+                courses = await res.json();
+                if (courses.length === 0) {
+                    list.innerHTML = `<div style="text-align:center;padding:2rem;color:#8aab8c;">No courses available for this court.</div>`;
+                    return;
+                }
+                list.innerHTML = courses.map(c => `
+                    <div class="list-item" onclick="selectCourse(${c.courseId},'${c.courseName}',${c.coursePrice},this)"
+                         data-coach="${c.coach ? c.coach.firstName + ' ' + c.coach.lastName : ''}"
+                         data-court="${selectedCourt.name}">
+                        <div class="list-item-icon">🎾</div>
+                        <div class="list-item-info">
+                            <div class="list-item-name">${c.coach ? c.coach.firstName + ' ' + c.coach.lastName : 'Unknown Coach'}</div>
+                            <div class="list-item-sub">${c.courseName} · $${c.coursePrice}</div>
+                            <div class="list-item-badge">${c.courseLevel || ''}</div>
+                        </div>
+                        <div class="list-item-check"></div>
                     </div>
-                    <div class="list-item-check"></div>
-                </div>
-            `).join('');
+                `).join('');
+            }
+        } catch(e) {
+            console.error('Failed to load courses', e);
+            list.innerHTML = `<div style="text-align:center;padding:2rem;color:#8aab8c;">Failed to load courses.</div>`;
         }
-    } catch(e) {
-        console.error('Failed to load courses', e);
-        list.innerHTML = `<div style="text-align:center;padding:2rem;color:#8aab8c;">Failed to load courses.</div>`;
     }
-}
 
-    function selectCourse(id, name, el) {
-        selectedCourse = { id, name };
+    function selectCourse(id, name, price, el) {
+        selectedCourse = { id, name, price };
         const coachName = el.dataset.coach;
         const courtName = el.dataset.court;
-
         if (bookingMode === 'coach') selectedCourt = { name: courtName };
         else selectedCoach = { name: coachName };
-
         document.querySelectorAll('#step2List .list-item').forEach(i => {
             i.classList.remove('selected');
             i.querySelector('.list-item-check').textContent = '';
@@ -511,6 +530,10 @@
         el.classList.add('selected');
         el.querySelector('.list-item-check').textContent = '✓';
         document.getElementById('nextStep2').disabled = false;
+        const sessionPrice = parseFloat(price) || 80;
+        document.getElementById('priceCard').style.display = 'block';
+        document.getElementById('priceSession').textContent = '$' + sessionPrice.toFixed(2);
+        document.getElementById('priceTotal').textContent = '$' + (sessionPrice + 5).toFixed(2);
         updateSummary();
     }
 
@@ -519,7 +542,6 @@
         selectedTime = null;
         document.getElementById('nextStep3').disabled = true;
         updateSummary();
-
         document.getElementById('timeSlots').innerHTML = timeSlots.map(t => `
             <div class="time-slot" onclick="selectTime('${t}', this)">${t}</div>
         `).join('');
@@ -578,27 +600,23 @@
         }
     }
 
-    // 真實預約 — 存入資料庫
     async function confirmBooking() {
         if (!currentUserId || !selectedCourse) {
             alert('Please complete all steps first.');
             return;
         }
-
         const bookingData = {
             user: { userId: currentUserId },
             course: { courseId: selectedCourse.id },
             orderStatus: 'pending',
-            totalPrice: 85.00
+            totalPrice: selectedCourse.price ? parseFloat(selectedCourse.price) + 5 : 85.00
         };
-
         try {
             const res = await fetch('/api/orders', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(bookingData)
             });
-
             if (res.ok) {
                 document.getElementById('mainContent').style.display = 'none';
                 document.querySelector('.steps-bar').style.display = 'none';
@@ -611,61 +629,6 @@
             alert('Connection error. Please try again.');
         }
     }
-    async function init() {
-    const res = await fetch('/api/auth/me');
-    const data = await res.json();
-    if (!data.loggedIn || data.role !== 'user') {
-        window.location.href = 'login.html';
-        return;
-    }
-    currentUserId = data.id;
-
-
-    // Check URL params
-const urlParams = new URLSearchParams(window.location.search);
-const modeParam = urlParams.get('mode');
-const courtParam = urlParams.get('court');
-const coachParam = urlParams.get('coach');
-
-if (modeParam === 'coach' && coachParam) {
-    // Coming from coaches.html - auto select coach
-    setMode('coach');
-    setTimeout(async () => {
-        const res = await fetch('/api/coaches');
-        const coaches = await res.json();
-        const coach = coaches.find(c => c.coachId == coachParam);
-        if (coach) {
-            const items = document.querySelectorAll('#coachListItems .list-item');
-            items.forEach(item => {
-                if (item.querySelector('.list-item-name').textContent === `${coach.firstName} ${coach.lastName}`) {
-                    item.click();
-                }
-            });
-        }
-    }, 500);
-} else if (modeParam === 'court' && courtParam) {
-    // Coming from courts.html - auto select court
-    setMode('court');
-    setTimeout(async () => {
-        const res = await fetch('/api/courts');
-        const courts = await res.json();
-        const court = courts.find(c => c.courtId == courtParam);
-        if (court) {
-            const items = document.querySelectorAll('#courtFirstItems .list-item');
-            items.forEach(item => {
-                if (item.querySelector('.list-item-name').textContent === court.courtName) {
-                    item.click();
-                }
-            });
-        }
-    }, 500);
-} else {
-    renderCoachList();
-}
-
-
-}
-
 
     init();
 </script>
