@@ -337,18 +337,28 @@
 
     // 切換模式
     function setMode(mode) {
-        bookingMode = mode;
-        selectedCoach = null;
-        selectedCourt = null;
-        selectedCourse = null;
-        document.getElementById('nextStep1').disabled = true;
-        document.getElementById('modeCoach').classList.toggle('active', mode === 'coach');
-        document.getElementById('modeCourt').classList.toggle('active', mode === 'court');
-        document.getElementById('coachList').style.display = mode === 'coach' ? 'block' : 'none';
-        document.getElementById('courtFirstList').style.display = mode === 'court' ? 'block' : 'none';
-        if (mode === 'coach') renderCoachList();
-        else renderCourtList();
+    bookingMode = mode;
+    selectedCoach = null;
+    selectedCourt = null;
+    selectedCourse = null;
+    document.getElementById('nextStep1').disabled = true;
+    document.getElementById('modeCoach').classList.toggle('active', mode === 'coach');
+    document.getElementById('modeCourt').classList.toggle('active', mode === 'court');
+    document.getElementById('coachList').style.display = mode === 'coach' ? 'block' : 'none';
+    document.getElementById('courtFirstList').style.display = mode === 'court' ? 'block' : 'none';
+
+    // Update step labels based on mode
+    if (mode === 'court') {
+        document.getElementById('sl1').textContent = 'Court';
+        document.getElementById('sl2').textContent = 'Coach';
+    } else {
+        document.getElementById('sl1').textContent = 'Coach';
+        document.getElementById('sl2').textContent = 'Court';
     }
+
+    if (mode === 'coach') renderCoachList();
+    else renderCourtList();
+}
 
     // 載入真實教練列表
     async function renderCoachList() {
@@ -373,23 +383,26 @@
 
     // 載入真實球場列表
     async function renderCourtList() {
-        try {
-            const res = await fetch('/api/courts');
-            const courts = await res.json();
-            document.getElementById('courtFirstItems').innerHTML = courts.map(c => `
-                <div class="list-item" onclick="selectCourtFirst(${c.courtId},'${c.courtName}',this)">
-                    <div class="list-item-icon">🏟️</div>
-                    <div class="list-item-info">
-                        <div class="list-item-name">${c.courtName}</div>
-                        <div class="list-item-sub">${c.courtLocation || 'TennisConnect'}</div>
-                    </div>
-                    <div class="list-item-check"></div>
+    try {
+        const res = await fetch('/api/courts');
+        const courts = await res.json();
+        const icons = ['🏟️','🎾','🌿','⭐','💎','🏅'];
+        document.getElementById('courtFirstItems').innerHTML = courts.map((c, i) => `
+            <div class="list-item" onclick="selectCourtFirst(${c.courtId},'${c.courtName}',this)">
+                <div class="list-item-icon">${icons[i % icons.length]}</div>
+                <div class="list-item-info">
+                    <div class="list-item-name">${c.courtName}</div>
+                    <div class="list-item-sub">${c.courtLocation || 'TennisConnect'} · ${c.courtStatus === 'available' ? 'Available' : 'Busy'}</div>
                 </div>
-            `).join('');
-        } catch(e) {
-            console.error('Failed to load courts', e);
-        }
+                <div class="list-item-check"></div>
+            </div>
+        `).join('');
+    } catch(e) {
+        console.error('Failed to load courts', e);
+        document.getElementById('courtFirstItems').innerHTML =
+            `<div style="text-align:center;padding:2rem;color:#8aab8c;">Failed to load courts.</div>`;
     }
+}
 
     function selectCoach(id, name, el) {
         selectedCoach = { id, name };
@@ -581,6 +594,45 @@
             alert('Connection error. Please try again.');
         }
     }
+    async function init() {
+    const res = await fetch('/api/auth/me');
+    const data = await res.json();
+    if (!data.loggedIn || data.role !== 'user') {
+        window.location.href = 'login.html';
+        return;
+    }
+    currentUserId = data.id;
+
+    // 檢查 URL 參數
+    const urlParams = new URLSearchParams(window.location.search);
+    const modeParam = urlParams.get('mode');
+    const courtParam = urlParams.get('court');
+
+    if (modeParam === 'court') {
+        // 自動切換到 Court First 模式
+        setMode('court');
+
+        // 如果有 court ID，自動選取
+        if (courtParam) {
+            setTimeout(async () => {
+                const items = document.querySelectorAll('#courtFirstItems .list-item');
+                const res = await fetch('/api/courts');
+                const courts = await res.json();
+                const court = courts.find(c => c.courtId == courtParam);
+                if (court) {
+                    items.forEach(item => {
+                        if (item.querySelector('.list-item-name').textContent === court.courtName) {
+                            item.click();
+                        }
+                    });
+                }
+            }, 500);
+        }
+    } else {
+        renderCoachList();
+    }
+}
+
 
     init();
 </script>
