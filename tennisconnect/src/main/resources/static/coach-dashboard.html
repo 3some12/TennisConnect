@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TennisConnect — Coach Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap"
+          rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -131,13 +132,9 @@
     <nav class="sidebar-nav">
         <div class="nav-section">Main</div>
         <a href="#" class="nav-item active"><span class="nav-item-icon">📊</span> Dashboard</a>
-        <a href="#" class="nav-item"><span class="nav-item-icon">📅</span> My Schedule <span class="nav-badge">3</span></a>
-        <a href="#" class="nav-item"><span class="nav-item-icon">🔔</span> Requests <span class="nav-badge">3</span></a>
-        <a href="#" class="nav-item"><span class="nav-item-icon">🏟️</span> My Courts</a>
         <a href="#" class="nav-item"><span class="nav-item-icon">⭐</span> Reviews</a>
         <div class="nav-section">Account</div>
         <a href="#" class="nav-item"><span class="nav-item-icon">👤</span> Profile</a>
-        <a href="#" class="nav-item"><span class="nav-item-icon">⚙️</span> Settings</a>
     </nav>
     <div class="sidebar-footer">
         <a href="#" onclick="logout()" class="logout-btn"><span>🚪</span> Sign Out</a>
@@ -150,7 +147,7 @@
         <div class="page-title">Coach Dashboard</div>
         <div style="display:flex;gap:0.8rem;">
             <button class="btn-outline">Set Availability</button>
-            <a href="#" class="btn-gold">Add New Course</a>
+            <a href="#" class="btn-gold">Add New Session</a>
         </div>
     </div>
 
@@ -195,8 +192,9 @@
 
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">Pending Requests</div>
-                    <span id="pendingBadge" style="background:#fff8e0;color:#a07828;border:1px solid #f0dfa0;font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;padding:0.2rem 0.6rem;">0 Pending</span>
+                    <div class="card-title">Pending</div>
+                    <span id="pendingBadge"
+                          style="background:#fff8e0;color:#a07828;border:1px solid #f0dfa0;font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;padding:0.2rem 0.6rem;">0 Pending</span>
                 </div>
                 <div class="card-body" id="requestsList">
                 </div>
@@ -208,9 +206,23 @@
                     <a href="#" class="card-action">Full Calendar →</a>
                 </div>
                 <div class="card-body" id="scheduleList">
-                    <div style="text-align:center;padding:2rem;color:#8aab8c;font-size:0.85rem;">No sessions today.</div>
+                    <div style="text-align:center;padding:2rem;color:#8aab8c;font-size:0.85rem;">No sessions today.
+                    </div>
                 </div>
             </div>
+
+            <!-- UPCOMING SCHEDULE -->
+            <div class="card" style="margin-top:1.5rem;">
+                <div class="card-header">
+                    <div class="card-title">Upcoming Schedule</div>
+                    <a href="#" class="card-action">View All →</a>
+                </div>
+                <div class="card-body" id="upcomingList">
+                    <div style="text-align:center;padding:2rem;color:#8aab8c;font-size:0.85rem;">No upcoming sessions.
+                    </div>
+                </div>
+            </div>
+
 
         </div>
 
@@ -239,59 +251,25 @@
 
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">This Week</div>
+                    <div class="card-title">This Month</div>
                     <a href="#" class="card-action">Edit →</a>
                 </div>
                 <div class="card-body">
-                    <div class="avail-grid">
-                        <div class="avail-day">
-                            <div class="avail-day-label">Mon</div>
-                            <div class="avail-slot available">09</div>
-                            <div class="avail-slot available">11</div>
-                            <div class="avail-slot available">14</div>
-                        </div>
-                        <div class="avail-day">
-                            <div class="avail-day-label">Tue</div>
-                            <div class="avail-slot available">09</div>
-                            <div class="avail-slot available">11</div>
-                            <div class="avail-slot available">14</div>
-                        </div>
-                        <div class="avail-day">
-                            <div class="avail-day-label">Wed</div>
-                            <div class="avail-slot available">09</div>
-                            <div class="avail-slot available">11</div>
-                            <div class="avail-slot available">14</div>
-                        </div>
-                        <div class="avail-day">
-                            <div class="avail-day-label">Thu</div>
-                            <div class="avail-slot available">09</div>
-                            <div class="avail-slot available">11</div>
-                            <div class="avail-slot available">14</div>
-                        </div>
-                        <div class="avail-day">
-                            <div class="avail-day-label">Fri</div>
-                            <div class="avail-slot available">09</div>
-                            <div class="avail-slot available">11</div>
-                            <div class="avail-slot available">14</div>
-                        </div>
-                        <div class="avail-day">
-                            <div class="avail-day-label">Sat</div>
-                            <div class="avail-slot available">09</div>
-                            <div class="avail-slot off">11</div>
-                            <div class="avail-slot off">14</div>
-                        </div>
-                        <div class="avail-day">
-                            <div class="avail-day-label">Sun</div>
-                            <div class="avail-slot off">09</div>
-                            <div class="avail-slot off">11</div>
-                            <div class="avail-slot off">14</div>
+                    <div class="card-body" id="weekCalendar">
+                        <div style="text-align:center;padding:1rem;color:#8aab8c;font-size:0.82rem;">Loading
+                            schedule...
                         </div>
                     </div>
-                    <div style="display:flex;gap:1rem;margin-top:0.8rem;font-size:0.65rem;color:#4A6B4D;">
-                        <span>🟢 Available</span>
-                        <span style="color:var(--green-mid);">⬛ Booked</span>
-                        <span style="color:#ccc;">⬜ Off</span>
-                    </div>
+
+                </div>
+            </div>
+            <!-- REVIEWS -->
+            <div class="card" style="margin-top:1.5rem;">
+                <div class="card-header">
+                    <div class="card-title">Recent Reviews</div>
+                </div>
+                <div class="card-body" id="reviewsList">
+                    <div style="text-align:center;padding:1.5rem;color:#8aab8c;font-size:0.82rem;">No reviews yet.</div>
                 </div>
             </div>
 
@@ -333,8 +311,7 @@
                 window.location.href = 'login.html';
             }
         }
-
-       async function loadRequests(coachId) {
+        async function loadRequests(coachId) {
     try {
         const res = await fetch('/api/orders');
         const orders = await res.json();
@@ -346,47 +323,175 @@
         const pendingOrders = coachOrders.filter(o => o.orderStatus === 'pending');
         const confirmed = coachOrders.filter(o => o.orderStatus === 'confirmed');
         const uniqueStudents = new Set(coachOrders.filter(o => o.user).map(o => o.user.userId));
+        const todayStr = new Date().toISOString().split('T')[0];
 
-        // 更新統計數字
+        // 統計數字
         document.getElementById('statStudents').textContent = uniqueStudents.size;
         document.getElementById('statSessions').textContent = confirmed.length;
         document.getElementById('statRevenue').textContent = '$' + (confirmed.length * 80).toLocaleString();
         document.getElementById('todaySessions').textContent = confirmed.length + ' session' + (confirmed.length !== 1 ? 's' : '');
-        document.getElementById('coachWelcomeSub').textContent =
-            pendingOrders.length > 0
-                ? `You have ${pendingOrders.length} pending booking request${pendingOrders.length > 1 ? 's' : ''}.`
-                : 'No pending requests today.';
+        document.getElementById('coachWelcomeSub').textContent = pendingOrders.length > 0
+            ? `You have ${pendingOrders.length} pending booking request${pendingOrders.length > 1 ? 's' : ''}.`
+            : 'No pending requests today.';
         document.getElementById('pendingBadge').textContent = pendingOrders.length + ' Pending';
 
+        // Pending Requests
         const list = document.getElementById('requestsList');
-
         if (pendingOrders.length === 0) {
             list.innerHTML = `<div style="text-align:center;padding:2rem;color:#8aab8c;font-size:0.85rem;">No pending requests.</div>`;
-            return;
-        }
-
-        list.innerHTML = pendingOrders.map(o => `
-            <div class="request-item" id="req-${o.orderId}">
-                <div class="request-avatar">👤</div>
-                <div class="request-info">
-                    <div class="request-name">${o.user ? o.user.firstName + ' ' + o.user.lastName : 'Unknown'}</div>
-                    <div class="request-meta">
-                        📅 ${o.orderTime ? new Date(o.orderTime).toLocaleString('en-US', {year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', hour12:true}) : 'N/A'}
-                        ${o.course ? ' · ' + o.course.courseName : ''}
-                        ${o.course && o.course.court ? ' · ' + o.course.court.courtName : ''}
+        } else {
+            list.innerHTML = pendingOrders.map(o => `
+                <div class="request-item" id="req-${o.orderId}">
+                    <div class="request-avatar">👤</div>
+                    <div class="request-info">
+                        <div class="request-name">${o.user ? o.user.firstName + ' ' + o.user.lastName : 'Unknown'}</div>
+                        <div class="request-meta">
+                            📅 ${o.sessionDate ? o.sessionDate.replace(/-/g,'/') + ' · ' + (o.sessionTime || '') : new Date(o.orderTime).toLocaleString('en-US', {month:'short', day:'numeric', year:'numeric'})}
+                            ${o.course ? ' · ' + o.course.courseName : ''}
+                            ${o.course && o.course.court ? ' · ' + o.course.court.courtName : ''}
+                        </div>
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn-accept" onclick="handleRequest(${o.orderId},'confirmed')">Accept</button>
+                        <button class="btn-decline" onclick="handleRequest(${o.orderId},'declined')">Decline</button>
                     </div>
                 </div>
-                <div class="request-actions">
-                    <button class="btn-accept" onclick="handleRequest(${o.orderId},'confirmed')">Accept</button>
-                    <button class="btn-decline" onclick="handleRequest(${o.orderId},'declined')">Decline</button>
-                </div>
+            `).join('');
+        }
+
+        // 今日課程
+        const todayCoachSessions = coachOrders.filter(o =>
+            o.sessionDate && o.sessionDate === todayStr && o.orderStatus === 'confirmed'
+        );
+        const scheduleList = document.getElementById('scheduleList');
+        if (todayCoachSessions.length === 0) {
+            scheduleList.innerHTML = `<div style="text-align:center;padding:2rem;color:#8aab8c;font-size:0.85rem;">No sessions today.</div>`;
+        } else {
+            scheduleList.innerHTML = todayCoachSessions.map(o => {
+                const timeParts = (o.sessionTime || '').split(' ');
+                return `
+                    <div class="schedule-item">
+                        <div class="schedule-time">
+                            <div class="schedule-time-val">${timeParts[0] || '--'}</div>
+                            <div class="schedule-time-ampm">${timeParts[1] || ''}</div>
+                        </div>
+                        <div class="schedule-line"></div>
+                        <div class="schedule-info">
+                            <div class="schedule-student">${o.user ? o.user.firstName + ' ' + o.user.lastName : 'Unknown'}</div>
+                            <div class="schedule-detail">${o.course ? o.course.courseName : ''} · 60 min</div>
+                            <div class="schedule-court">${o.course && o.course.court ? o.course.court.courtName : ''}</div>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        // Upcoming Schedule
+        const upcomingCoachSessions = coachOrders.filter(o =>
+            o.sessionDate && o.sessionDate > todayStr &&
+            (o.orderStatus === 'confirmed' || o.orderStatus === 'pending')
+        ).sort((a, b) => a.sessionDate.localeCompare(b.sessionDate) || (a.sessionTime || '').localeCompare(b.sessionTime || ''));
+
+        const upcomingList = document.getElementById('upcomingList');
+        if (upcomingCoachSessions.length === 0) {
+            upcomingList.innerHTML = `<div style="text-align:center;padding:2rem;color:#8aab8c;font-size:0.85rem;">No upcoming sessions.</div>`;
+        } else {
+            upcomingList.innerHTML = upcomingCoachSessions.map(o => {
+                const statusClass = o.orderStatus === 'confirmed' ? 'confirmed' : 'pending';
+                const statusText = o.orderStatus === 'confirmed' ? 'Confirmed' : 'Pending';
+                return `
+                    <div class="schedule-item">
+                        <div class="schedule-time">
+                            <div class="schedule-time-val" style="font-size:0.7rem;">${o.sessionDate ? o.sessionDate.replace(/-/g,'/').slice(5) : '--'}</div>
+                            <div class="schedule-time-ampm">${o.sessionTime ? o.sessionTime.split(' ')[1] || '' : ''}</div>
+                        </div>
+                        <div class="schedule-line"></div>
+                        <div class="schedule-info">
+                            <div class="schedule-student">${o.user ? o.user.firstName + ' ' + o.user.lastName : 'Unknown'}</div>
+                            <div class="schedule-detail">${o.sessionTime || ''} · ${o.course ? o.course.courseName : ''} · 60 min</div>
+                            <div class="schedule-court">${o.course && o.course.court ? o.course.court.courtName : ''}</div>
+                        </div>
+                        <span class="booking-status status-${statusClass}" style="font-size:0.6rem;padding:0.2rem 0.5rem;">${statusText}</span>
+                    </div>`;
+            }).join('');
+        }
+
+        // 月曆
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth();
+        const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const bookedDates = new Set(coachOrders.filter(o => o.orderStatus === 'confirmed' && o.sessionDate).map(o => o.sessionDate));
+
+        document.getElementById('weekCalendar').innerHTML = `
+            <div style="font-family:'Cinzel',serif;font-size:0.8rem;color:#0F2D12;margin-bottom:0.8rem;text-align:center;">${monthNames[month]} ${year}</div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:0.5rem;">
+                ${dayNames.map(d => `<div style="text-align:center;font-size:0.6rem;color:#4A6B4D;letter-spacing:1px;text-transform:uppercase;padding:0.2rem 0;">${d}</div>`).join('')}
             </div>
-        `).join('');
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;">
+                ${Array(firstDay).fill('<div></div>').join('')}
+                ${Array.from({length: daysInMonth}, (_, i) => {
+                    const day = i + 1;
+                    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                    const isBooked = bookedDates.has(dateStr);
+                    const isToday = dateStr === todayStr;
+                    let bg = 'transparent', color = '#4A6B4D', border = '1px solid transparent';
+                    if (isBooked) { bg = '#112A14'; color = '#fff'; }
+                    if (isToday) { border = '1px solid #4CAF72'; }
+                    return `<div style="text-align:center;padding:0.3rem 0;font-size:0.75rem;background:${bg};color:${color};border:${border};border-radius:2px;">${day}</div>`;
+                }).join('')}
+            </div>
+            <div style="display:flex;gap:1rem;margin-top:0.8rem;font-size:0.65rem;color:#4A6B4D;flex-wrap:wrap;">
+                <span style="display:flex;align-items:center;gap:0.3rem;"><span style="width:12px;height:12px;background:#112A14;display:inline-block;border-radius:2px;"></span> Booked</span>
+                <span style="display:flex;align-items:center;gap:0.3rem;"><span style="width:12px;height:12px;border:1px solid #4CAF72;display:inline-block;border-radius:2px;"></span> Today</span>
+            </div>`;
+
+        // 評價
+        const reviewRes = await fetch('/api/reviews');
+        const allReviews = await reviewRes.json();
+        const coachReviews = allReviews.filter(r =>
+            r.order && r.order.course &&
+            r.order.course.coach &&
+            r.order.course.coach.coachId == coachId
+        );
+
+        if (coachReviews.length > 0) {
+            const avg = coachReviews.reduce((sum, r) => sum + r.rating, 0) / coachReviews.length;
+            document.getElementById('statRating').textContent = avg.toFixed(1) + '★';
+            document.getElementById('profileRating').textContent = avg.toFixed(1) + '★';
+            document.getElementById('profileReviews').textContent = coachReviews.length;
+        }
+
+        const reviewsList = document.getElementById('reviewsList');
+        if (reviewsList) {
+            if (coachReviews.length === 0) {
+                reviewsList.innerHTML = `<div style="text-align:center;padding:1.5rem;color:#8aab8c;font-size:0.82rem;">No reviews yet.</div>`;
+            } else {
+                reviewsList.innerHTML = coachReviews.slice(0, 5).map(r => `
+                    <div style="padding:0.8rem 0;border-bottom:1px solid #f0f8ee;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem;">
+                            <div style="font-size:0.82rem;font-weight:500;color:#0F2D12;">
+                                ${r.order && r.order.user ? r.order.user.firstName + ' ' + r.order.user.lastName : 'Anonymous'}
+                            </div>
+                            <div style="color:var(--gold);font-size:0.9rem;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+                        </div>
+                        ${r.comment ? `<div style="font-size:0.78rem;color:#4A6B4D;line-height:1.5;">"${r.comment}"</div>` : ''}
+                        <div style="font-size:0.68rem;color:#8aab8c;margin-top:0.3rem;">
+                            ${r.reviewTime ? new Date(r.reviewTime).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
 
     } catch(e) {
         console.error('Failed to load requests', e);
     }
 }
+
+
 
         async function handleRequest(orderId, status) {
             const item = document.getElementById(`req-${orderId}`);

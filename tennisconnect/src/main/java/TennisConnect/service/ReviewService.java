@@ -4,6 +4,7 @@ import TennisConnect.model.Review;
 import TennisConnect.repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,7 @@ public class ReviewService {
     }
 
     public List<Review> getReviewsByOrder(Long orderId) {
-        return reviewRepository.findByOrderOrderId(orderId);
+        return reviewRepository.findAllByOrderOrderId(orderId);
     }
 
     public Review createReview(Review review) {

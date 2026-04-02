@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TennisConnect — My Orders</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap"
+          rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --green-dark:#0A1F0C; --green-mid:#112A14; --green-light:#EFF5EE; --green-accent:#4CAF72; --gold:#C8A951; }
+        body { background: var(--green-light); font-family: 'Outfit', sans-serif; display: flex; min-height: 100vh; }
+
+        /* SIDEBAR */
+        .sidebar { width: 240px; background: var(--green-mid); min-height: 100vh; display: flex; flex-direction: column; position: fixed; left: 0; top: 0; bottom: 0; border-right: 1px solid rgba(76,175,114,0.15); }
+        .sidebar-logo { padding: 1.8rem 1.5rem; border-bottom: 1px solid rgba(76,175,114,0.1); }
+        .sidebar-logo a { font-family: 'Cinzel', serif; color: #fff; font-size: 0.95rem; font-weight: 600; letter-spacing: 3px; text-decoration: none; }
+        .sidebar-logo a span { color: var(--green-accent); }
+        .sidebar-user { padding: 1.5rem; border-bottom: 1px solid rgba(76,175,114,0.1); display: flex; align-items: center; gap: 0.8rem; }
+        .user-avatar { width: 40px; height: 40px; background: var(--green-accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 700; color: var(--green-mid); flex-shrink: 0; }
+        .user-name { font-size: 0.82rem; font-weight: 500; color: #fff; }
+        .user-role { font-size: 0.65rem; color: rgba(255,255,255,0.35); letter-spacing: 1px; text-transform: uppercase; }
+        .sidebar-nav { flex: 1; padding: 1rem 0; }
+        .nav-section { font-size: 0.58rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 0.8rem 1.5rem 0.4rem; }
+        .nav-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.65rem 1.5rem; color: rgba(255,255,255,0.45); font-size: 0.82rem; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+        .nav-item:hover { background: rgba(76,175,114,0.08); color: #fff; }
+        .nav-item.active { background: rgba(76,175,114,0.12); color: #fff; border-right: 2px solid var(--green-accent); }
+        .sidebar-footer { padding: 1.2rem 1.5rem; border-top: 1px solid rgba(76,175,114,0.1); }
+        .logout-btn { display: flex; align-items: center; gap: 0.8rem; color: rgba(255,255,255,0.3); font-size: 0.78rem; cursor: pointer; text-decoration: none; transition: color 0.3s; }
+        .logout-btn:hover { color: #ff6b6b; }
+
+        /* MAIN */
+        .main { margin-left: 240px; flex: 1; padding: 2.5rem; }
+        .page-title { font-family: 'Cinzel', serif; font-size: 1.4rem; font-weight: 700; color: #0F2D12; letter-spacing: 1px; margin-bottom: 2rem; }
+
+        /* TABS */
+        .tabs { display: flex; gap: 0; margin-bottom: 2rem; border-bottom: 2px solid #d4e6d0; }
+        .tab { padding: 0.7rem 1.5rem; font-size: 0.72rem; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; border: none; background: none; color: #4A6B4D; font-family: 'Outfit', sans-serif; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.3s; }
+        .tab.active { color: #0F2D12; border-bottom-color: var(--green-accent); font-weight: 600; }
+
+        /* ORDER CARD */
+        .orders-list { display: flex; flex-direction: column; gap: 1rem; }
+        .order-card { background: #fff; border: 1px solid #d4e6d0; padding: 1.3rem; display: flex; align-items: center; gap: 1rem; transition: box-shadow 0.2s; }
+        .order-card:hover { box-shadow: 0 4px 20px rgba(15,45,18,0.08); }
+        .order-icon { width: 48px; height: 48px; background: var(--green-mid); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+        .order-info { flex: 1; }
+        .order-title { font-family: 'Cinzel', serif; font-size: 0.95rem; font-weight: 600; color: #0F2D12; margin-bottom: 0.3rem; }
+        .order-meta { font-size: 0.78rem; color: #4A6B4D; display: flex; gap: 1rem; flex-wrap: wrap; }
+        .order-price { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--green-accent); font-weight: 600; margin-right: 1rem; }
+        .order-actions { display: flex; align-items: center; gap: 0.8rem; }
+        .status-badge { font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; padding: 0.25rem 0.7rem; font-weight: 600; }
+        .status-confirmed { background: #efe; color: #2a6; border: 1px solid #cfc; }
+        .status-pending { background: #fff8e0; color: #a07828; border: 1px solid #f0dfa0; }
+        .status-declined { background: #fee; color: #c44; border: 1px solid #fcc; }
+        .status-completed { background: #f0f0f0; color: #666; border: 1px solid #ddd; }
+        .review-btn { background: var(--gold); color: var(--green-dark); padding: 0.4rem 1rem; border: none; font-family: 'Outfit', sans-serif; font-size: 0.68rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.3s; }
+        .review-btn:hover { background: #DBBE6A; }
+        .reviewed-badge { font-size: 0.68rem; color: var(--gold); letter-spacing: 1px; }
+        .empty-state { text-align: center; padding: 4rem 2rem; color: #8aab8c; }
+        .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+        .empty-title { font-family: 'Cinzel', serif; font-size: 1rem; color: #4A6B4D; margin-bottom: 0.5rem; }
+
+        /* REVIEW MODAL */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center; display: none; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: #fff; padding: 2rem; width: 100%; max-width: 480px; position: relative; }
+        .modal-title { font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 700; color: #0F2D12; margin-bottom: 0.3rem; }
+        .modal-sub { font-size: 0.82rem; color: #4A6B4D; margin-bottom: 1.5rem; }
+        .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #4A6B4D; }
+        .stars { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .star { font-size: 2rem; cursor: pointer; color: #d4e6d0; transition: color 0.2s; }
+        .star.active { color: var(--gold); }
+        .review-textarea { width: 100%; padding: 0.8rem; border: 1px solid #d4e6d0; font-family: 'Outfit', sans-serif; font-size: 0.85rem; color: #0F2D12; resize: vertical; min-height: 100px; outline: none; margin-bottom: 1rem; }
+        .review-textarea:focus { border-color: var(--green-accent); }
+        .submit-review-btn { width: 100%; background: var(--green-mid); color: #fff; padding: 0.8rem; border: none; font-family: 'Outfit', sans-serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: background 0.3s; }
+        .submit-review-btn:hover { background: #1A4520; }
+        .rating-label { font-size: 0.72rem; letter-spacing: 1px; text-transform: uppercase; color: #4A6B4D; margin-bottom: 0.5rem; display: block; }
+        .msg { padding: 0.7rem 1rem; font-size: 0.78rem; margin-bottom: 1rem; display: none; }
+        .msg.success { background: #efe; color: #2a6; border: 1px solid #cfc; display: block; }
+        .msg.error { background: #fee; color: #c44; border: 1px solid #fcc; display: block; }
+
+        @media (max-width: 900px) {
+            .sidebar { display: none; }
+            .main { margin-left: 0; padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-logo"><a href="index.html">Tennis<span>Connect</span></a></div>
+    <div class="sidebar-user">
+        <div class="user-avatar" id="userInitials">...</div>
+        <div>
+            <div class="user-name" id="sidebarName">Loading...</div>
+            <div class="user-role">Member</div>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">Main</div>
+        <a href="dashboard.html" class="nav-item"><span>📊</span> Dashboard</a>
+        <a href="coaches.html" class="nav-item"><span>🎾</span> Find Coaches</a>
+        <a href="courts.html" class="nav-item"><span>🏟️</span> Find Courts</a>
+        <div class="nav-section">Account</div>
+        <a href="#" class="nav-item"><span>👤</span> Profile</a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="#" onclick="logout()" class="logout-btn"><span>🚪</span> Sign Out</a>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+    <div class="page-title">Booking History</div>
+
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('upcoming')">Upcoming</button>
+        <button class="tab" onclick="switchTab('past')">Past & History</button>
+        <button class="tab" onclick="switchTab('all')">All Orders</button>
+    </div>
+
+    <div class="orders-list" id="ordersList">
+        <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <div class="empty-title">Loading...</div>
+        </div>
+    </div>
+</main>
+
+<!-- REVIEW MODAL -->
+<div class="modal-overlay" id="reviewModal">
+    <div class="modal">
+        <button class="modal-close" onclick="closeReview()">✕</button>
+        <div class="modal-title">Leave a Review</div>
+        <div class="modal-sub" id="reviewModalSub">Rate your session</div>
+        <div class="msg" id="reviewMsg"></div>
+        <span class="rating-label">Your Rating</span>
+        <div class="stars" id="stars">
+            <span class="star" onclick="setRating(1)">★</span>
+            <span class="star" onclick="setRating(2)">★</span>
+            <span class="star" onclick="setRating(3)">★</span>
+            <span class="star" onclick="setRating(4)">★</span>
+            <span class="star" onclick="setRating(5)">★</span>
+        </div>
+        <textarea class="review-textarea" id="reviewComment"
+                  placeholder="Share your experience with this coach..."></textarea>
+        <button class="submit-review-btn" onclick="submitReview()">Submit Review</button>
+    </div>
+</div>
+
+<script>
+    let allOrders = [];
+    let currentTab = 'upcoming';
+    let currentOrderId = null;
+    let currentRating = 0;
+    let currentUserId = null;
+    let reviewedOrderIds = new Set();
+
+    async function init() {
+        try {
+            const res = await fetch('/api/auth/me');
+            const data = await res.json();
+            if (!data.loggedIn || data.role !== 'user') {
+                window.location.href = 'login.html';
+                return;
+            }
+            currentUserId = data.id;
+            const name = data.name;
+            document.getElementById('userInitials').textContent = name.split(' ').map(n => n[0]).join('');
+            document.getElementById('sidebarName').textContent = name;
+            loadOrders(data.id);
+        } catch(e) {
+            window.location.href = 'login.html';
+        }
+    }
+
+    async function loadOrders(userId) {
+    try {
+        const [orderRes, reviewRes] = await Promise.all([
+            fetch(`/api/orders/user/${userId}`),
+            fetch(`/api/reviews`)
+        ]);
+        allOrders = await orderRes.json();
+        const allReviews = await reviewRes.json();
+        // 建立已評價的 orderId Set
+        reviewedOrderIds = new Set(allReviews.map(r => r.order.orderId));
+        renderOrders();
+    } catch(e) {
+        console.error('Failed to load orders', e);
+    }
+}
+
+    function switchTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab').forEach((t, i) => {
+            t.classList.toggle('active',
+                (i === 0 && tab === 'upcoming') ||
+                (i === 1 && tab === 'past') ||
+                (i === 2 && tab === 'all')
+            );
+        });
+        renderOrders();
+    }
+
+    function renderOrders() {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const icons = ['🎾','🏆','💪','⭐','🎯','🏅','🥇','🎽'];
+
+        let filtered = allOrders;
+        if (currentTab === 'upcoming') {
+            filtered = allOrders.filter(o =>
+                o.sessionDate && o.sessionDate >= todayStr &&
+                (o.orderStatus === 'confirmed' || o.orderStatus === 'pending')
+            );
+        } else if (currentTab === 'past') {
+            filtered = allOrders.filter(o =>
+                o.sessionDate && o.sessionDate < todayStr
+            );
+        }
+
+        // Sort by date
+        filtered.sort((a, b) => {
+            if (currentTab === 'past') return (b.sessionDate || '').localeCompare(a.sessionDate || '');
+            return (a.sessionDate || '').localeCompare(b.sessionDate || '');
+        });
+
+        const list = document.getElementById('ordersList');
+
+        if (filtered.length === 0) {
+            list.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">${currentTab === 'upcoming' ? '📅' : '📋'}</div>
+                    <div class="empty-title">${currentTab === 'upcoming' ? 'No upcoming sessions' : 'No past orders'}</div>
+                    ${currentTab === 'upcoming' ? '<p style="font-size:0.82rem;color:#8aab8c;margin-top:0.5rem;"><a href="coaches.html" style="color:var(--green-accent);">Book a session now</a></p>' : ''}
+                </div>`;
+            return;
+        }
+
+        const todayDate = new Date();
+        list.innerHTML = filtered.map((o, i) => {
+            const statusClass = o.orderStatus === 'confirmed' ? 'confirmed'
+                : o.orderStatus === 'completed' ? 'completed'
+                : o.orderStatus === 'declined' ? 'declined' : 'pending';
+            const statusText = o.orderStatus === 'confirmed' ? 'Confirmed'
+                : o.orderStatus === 'completed' ? 'Completed'
+                : o.orderStatus === 'declined' ? 'Declined' : 'Pending';
+
+            // Check if can review: confirmed + past date
+            const isPast = o.sessionDate && o.sessionDate < todayStr;
+            const canReview = isPast && o.orderStatus === 'confirmed' && !reviewedOrderIds.has(o.orderId);
+            const alreadyReviewed = isPast && o.orderStatus === 'confirmed' && reviewedOrderIds.has(o.orderId);
+
+            return `
+                <div class="order-card">
+                    <div class="order-icon">${icons[i % icons.length]}</div>
+                    <div class="order-info">
+                        <div class="order-title">${o.course ? o.course.courseName : 'Session'}</div>
+                        <div class="order-meta">
+                            <span>👤 ${o.course && o.course.coach ? o.course.coach.firstName + ' ' + o.course.coach.lastName : '—'}</span>
+                            <span>🏟️ ${o.course && o.course.court ? o.course.court.courtName : '—'}</span>
+                            <span>📅 ${o.sessionDate ? o.sessionDate.replace(/-/g,'/') : '—'} ${o.sessionTime ? '· ' + o.sessionTime : ''}</span>
+                        </div>
+                    </div>
+                    <div class="order-actions">
+                        <span class="order-price">$${o.totalPrice ? o.totalPrice.toFixed(2) : '—'}</span>
+                        <span class="status-badge status-${statusClass}">${statusText}</span>
+                        ${canReview ? `<button class="review-btn" onclick="openReview(${o.orderId}, '${o.course ? o.course.courseName : 'Session'}')">Leave Review</button>` : ''}
+${alreadyReviewed ? `   <span class="reviewed-badge">★ Reviewed</span>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function openReview(orderId, courseName) {
+        currentOrderId = orderId;
+        currentRating = 0;
+        document.getElementById('reviewModalSub').textContent = courseName;
+        document.getElementById('reviewComment').value = '';
+        document.getElementById('reviewMsg').className = 'msg';
+        document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+        document.getElementById('reviewModal').classList.add('show');
+    }
+
+    function closeReview() {
+        document.getElementById('reviewModal').classList.remove('show');
+    }
+
+    function setRating(rating) {
+        currentRating = rating;
+        document.querySelectorAll('.star').forEach((s, i) => {
+            s.classList.toggle('active', i < rating);
+        });
+    }
+
+    async function submitReview() {
+        if (currentRating === 0) {
+            const msg = document.getElementById('reviewMsg');
+            msg.className = 'msg error';
+            msg.textContent = 'Please select a rating first.';
+            return;
+        }
+
+        const comment = document.getElementById('reviewComment').value;
+        const reviewData = {
+            order: { orderId: currentOrderId },
+            rating: currentRating,
+            comment: comment
+        };
+
+        try {
+            const res = await fetch('/api/reviews', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(reviewData)
+            });
+
+            if (res.ok) {
+                const msg = document.getElementById('reviewMsg');
+                msg.className = 'msg success';
+                msg.textContent = '✓ Review submitted successfully!';
+                setTimeout(() => {
+                    closeReview();
+                    loadOrders(currentUserId);
+                }, 1500);
+            } else {
+                const msg = document.getElementById('reviewMsg');
+                msg.className = 'msg error';
+                msg.textContent = 'Failed to submit review. Please try again.';
+            }
+        } catch(e) {
+            console.error('Review error', e);
+        }
+    }
+
+    async function logout() {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        localStorage.clear();
+        window.location.href = 'index.html';
+    }
+
+    init();
+</script>
+</body>
+</html>

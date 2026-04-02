@@ -26,5 +26,7 @@ public class Order {
 
     private LocalDateTime orderTime;
     private String orderStatus;
+    private java.time.LocalDate sessionDate;
+    private String sessionTime;
     private Double totalPrice;
 }

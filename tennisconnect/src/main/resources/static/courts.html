@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TennisConnect — Courts</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap"
+          rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -102,15 +103,20 @@
 <!-- NAV -->
 <nav>
     <a href="index.html" class="nav-logo">Tennis<span>Connect</span></a>
-    <ul class="nav-links" id="navLinks">
+    <ul class="nav-links">
         <li><a href="coaches.html">Coaches</a></li>
         <li><a href="courts.html" class="active">Courts</a></li>
         <li id="navHowIt"><a href="index.html#how">How It Works</a></li>
         <li id="navLogin"><a href="login.html">Login</a></li>
     </ul>
-    <a href="register.html" class="nav-btn" id="navGetStarted">Get Started</a>
-    <a href="#" id="navUserName" class="nav-btn" style="display:none;background:var(--green-accent);color:var(--green-mid);font-weight:600;"></a>
-    <a href="#" onclick="logout()" id="navSignOut" style="display:none;font-size:0.65rem;color:rgba(255,255,255,0.6);text-decoration:none;letter-spacing:1px;margin-left:0.8rem;">Sign Out</a>
+    <div style="display:flex;align-items:center;gap:0.8rem;">
+        <a href="register.html" class="nav-btn" id="navGetStarted" style="display:none;">Get Started</a>
+        <a href="#" id="navUserName" class="nav-btn"
+           style="display:none;background:var(--green-accent);color:var(--green-mid);font-weight:600;"></a>
+        <a href="#" onclick="logout()" id="navLogout"
+           style="display:none;font-size:0.65rem;color:rgba(255,255,255,0.6);text-decoration:none;letter-spacing:1px;">Sign
+            Out</a>
+    </div>
 </nav>
 
 <!-- HERO -->
@@ -119,14 +125,16 @@
     <div class="page-hero-content">
         <div class="page-tag">Browse All Courts</div>
         <h1 class="page-title">Explore Our Premium Courts</h1>
-        <p class="page-desc">Find the perfect court, check availability, and book with a coach that suits your schedule.</p>
+        <p class="page-desc">Find the perfect court, check availability, and book with a coach that suits your
+            schedule.</p>
     </div>
 </div>
 
 <!-- FILTER BAR -->
 <div class="filter-bar">
     <div class="search-wrap">
-        <input class="search-input" type="text" id="searchInput" placeholder="Search by court name or location..." oninput="filterCourts()">
+        <input class="search-input" type="text" id="searchInput" placeholder="Search by court name or location..."
+               oninput="filterCourts()">
     </div>
     <select class="filter-select" id="surfaceFilter" onchange="filterCourts()">
         <option value="">All Surfaces</option>
@@ -249,28 +257,33 @@
 </script>
 <script>
     async function checkAuth() {
-        try {
-            const res = await fetch('/api/auth/me');
-            const data = await res.json();
-            if (data.loggedIn) {
-                document.getElementById('navLogin').style.display = 'none';
-                document.getElementById('navHowIt').style.display = 'none';
-                document.getElementById('navGetStarted').style.display = 'none';
-                const userBtn = document.getElementById('navUserName');
-                userBtn.style.display = 'inline-block';
-                userBtn.textContent = data.name.split(' ')[0];
-                userBtn.href = data.role === 'coach' ? 'coach-dashboard.html' : 'dashboard.html';
-                document.getElementById('navSignOut').style.display = 'inline-block';
-            }
-        } catch(e) {
-            console.error('Auth check failed', e);
-        }
-    }
-    async function logout() {
-        await fetch('/api/auth/logout', { method: 'POST' });
-        window.location.href = 'index.html';
-    }
-    checkAuth();
+     try {
+         const res = await fetch('/api/auth/me');
+         const data = await res.json();
+         if (data.loggedIn) {
+             document.getElementById('navLogin').style.display = 'none';
+             document.getElementById('navHowIt').style.display = 'none';
+             document.getElementById('navGetStarted').style.display = 'none';
+             const userBtn = document.getElementById('navUserName');
+             userBtn.style.display = 'inline-block';
+             userBtn.textContent = data.name.split(' ')[0];
+             userBtn.href = data.role === 'coach' ? 'coach-dashboard.html' : 'dashboard.html';
+             document.getElementById('navLogout').style.display = 'inline-block';
+         } else {
+             document.getElementById('navGetStarted').style.display = 'inline-block';
+         }
+     } catch(e) {
+         document.getElementById('navGetStarted').style.display = 'inline-block';
+     }
+ }
+
+ async function logout() {
+     await fetch('/api/auth/logout', { method: 'POST' });
+     localStorage.clear();
+     window.location.href = 'index.html';
+ }
+
+ checkAuth();
 </script>
 </body>
 </html>

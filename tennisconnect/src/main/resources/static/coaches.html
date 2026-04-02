@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TennisConnect — Find a Coach</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap"
+          rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -98,15 +99,20 @@
 <!-- NAV -->
 <nav>
     <a href="index.html" class="nav-logo">Tennis<span>Connect</span></a>
-    <ul class="nav-links" id="navLinks">
+    <ul class="nav-links">
         <li><a href="coaches.html" class="active">Coaches</a></li>
         <li><a href="courts.html">Courts</a></li>
         <li id="navHowIt"><a href="index.html#how">How It Works</a></li>
         <li id="navLogin"><a href="login.html">Login</a></li>
     </ul>
-    <a href="register.html" class="nav-btn" id="navGetStarted">Get Started</a>
-    <a href="#" id="navUserName" class="nav-btn" style="display:none;background:var(--green-accent);color:var(--green-mid);font-weight:600;"></a>
-    <a href="#" onclick="logout()" id="navLogout" style="display:none;font-size:0.65rem;color:rgba(255,255,255,0.6);text-decoration:none;letter-spacing:1px;margin-left:0.8rem;">Sign Out</a>
+    <div style="display:flex;align-items:center;gap:0.8rem;">
+        <a href="register.html" class="nav-btn" id="navGetStarted" style="display:none;">Get Started</a>
+        <a href="#" id="navUserName" class="nav-btn"
+           style="display:none;background:var(--green-accent);color:var(--green-mid);font-weight:600;"></a>
+        <a href="#" onclick="logout()" id="navLogout"
+           style="display:none;font-size:0.65rem;color:rgba(255,255,255,0.6);text-decoration:none;letter-spacing:1px;">Sign
+            Out</a>
+    </div>
 </nav>
 
 <!-- HERO BANNER -->
@@ -115,14 +121,16 @@
     <div class="page-hero-content">
         <div class="page-tag">Browse All Coaches</div>
         <h1 class="page-title">Find Your Perfect Coach</h1>
-        <p class="page-desc">Browse our roster of certified tennis coaches and find the right match for your skill level and goals.</p>
+        <p class="page-desc">Browse our roster of certified tennis coaches and find the right match for your skill level
+            and goals.</p>
     </div>
 </div>
 
 <!-- SEARCH BAR -->
 <div class="search-bar">
     <div class="search-input-wrap">
-        <input class="search-input" type="text" id="searchInput" placeholder="Search by name or specialty..." oninput="filterCoaches()">
+        <input class="search-input" type="text" id="searchInput" placeholder="Search by name or specialty..."
+               oninput="filterCoaches()">
     </div>
     <select class="filter-select" id="specialtyFilter" onchange="filterCoaches()">
         <option value="">All Specialties</option>
@@ -150,7 +158,9 @@
         </select>
     </div>
     <div class="coaches-grid" id="coachesGrid">
-        <div class="loading"><div class="loading-text">Loading coaches...</div></div>
+        <div class="loading">
+            <div class="loading-text">Loading coaches...</div>
+        </div>
     </div>
 </div>
 
@@ -174,16 +184,29 @@
         { coachId: 6, firstName: 'Lily', lastName: 'Park', specialty: 'Advanced Techniques', experienceYears: 9 },
     ];
 
-    fetch('/api/coaches')
-        .then(r => r.json())
-        .then(data => {
-            allCoaches = data.length > 0 ? data : demoCoaches;
-            renderCoaches(allCoaches);
-        })
-        .catch(() => {
-            allCoaches = demoCoaches;
-            renderCoaches(allCoaches);
-        });
+   Promise.all([
+    fetch('/api/coaches').then(r => r.json()),
+    fetch('/api/reviews').then(r => r.json())
+])
+.then(([coaches, reviews]) => {
+    const coachRatings = {};
+    reviews.forEach(r => {
+        if (r.order && r.order.course && r.order.course.coach) {
+            const coachId = r.order.course.coach.coachId;
+            if (!coachRatings[coachId]) coachRatings[coachId] = [];
+            coachRatings[coachId].push(r.rating);
+        }
+    });
+    allCoaches = (coaches.length > 0 ? coaches : demoCoaches).map(c => ({
+        ...c,
+        avgRating: coachRatings[c.coachId]
+            ? (coachRatings[c.coachId].reduce((a,b) => a+b, 0) / coachRatings[c.coachId].length).toFixed(1)
+            : null,
+        reviewCount: coachRatings[c.coachId] ? coachRatings[c.coachId].length : 0
+    }));
+    renderCoaches(allCoaches);
+})
+.catch(() => { allCoaches = demoCoaches; renderCoaches(allCoaches); });
 
     function renderCoaches(coaches) {
         const grid = document.getElementById('coachesGrid');
@@ -202,7 +225,7 @@
             <div class="coach-card">
                 <div class="coach-avatar">
                     ${icons[i % icons.length]}
-                    ${c.experienceYears >= 10 ? '<div class="coach-badge">Top Rated</div>' : ''}
+                    ${c.reviewCount >= 5 && c.avgRating >= 4.5 ? '<div class="coach-badge">Top Rated</div>' : ''}
                 </div>
                 <div class="coach-info">
                     <div class="coach-name">${c.firstName} ${c.lastName}</div>
@@ -213,11 +236,13 @@
                     </div>
                     <div class="coach-divider"></div>
                     <div class="coach-footer">
-                        <div class="coach-rating">
-                            ★★★★★ <span class="coach-rating-num">(4.9)</span>
-                        </div>
-                        <a href="booking.html?coach=${c.coachId}&mode=coach" class="book-btn">Book Now</a>
-                    </div>
+                    <div class="coach-rating">
+                    ${c.avgRating
+                    ? `${'★'.repeat(Math.round(c.avgRating))}${'☆'.repeat(5-Math.round(c.avgRating))} <span class="coach-rating-num">(${c.avgRating})</span>`
+                    : `<span class="coach-rating-num" style="color:#8aab8c;font-size:0.72rem;">No reviews yet</span>`}
+                </div>
+                     <a href="booking.html?coach=${c.coachId}&mode=coach" class="book-btn">Book Now</a>
+                </div>
                 </div>
             </div>
         `).join('');
@@ -246,28 +271,33 @@
 </script>
 <script>
     async function checkAuth() {
-        try {
-            const res = await fetch('/api/auth/me');
-            const data = await res.json();
-            if (data.loggedIn) {
-                document.getElementById('navLogin').style.display = 'none';
-                document.getElementById('navHowIt').style.display = 'none';
-                document.getElementById('navGetStarted').style.display = 'none';
-                const userBtn = document.getElementById('navUserName');
-                userBtn.style.display = 'inline-block';
-                userBtn.textContent = data.name.split(' ')[0];
-                userBtn.href = data.role === 'coach' ? 'coach-dashboard.html' : 'dashboard.html';
-                document.getElementById('navLogout').style.display = 'inline-block';
-            }
-        } catch(e) {
-            console.error('Auth check failed', e);
-        }
-    }
-    async function logout() {
-        await fetch('/api/auth/logout', { method: 'POST' });
-        window.location.href = 'index.html';
-    }
-    checkAuth();
+     try {
+         const res = await fetch('/api/auth/me');
+         const data = await res.json();
+         if (data.loggedIn) {
+             document.getElementById('navLogin').style.display = 'none';
+             document.getElementById('navHowIt').style.display = 'none';
+             document.getElementById('navGetStarted').style.display = 'none';
+             const userBtn = document.getElementById('navUserName');
+             userBtn.style.display = 'inline-block';
+             userBtn.textContent = data.name.split(' ')[0];
+             userBtn.href = data.role === 'coach' ? 'coach-dashboard.html' : 'dashboard.html';
+             document.getElementById('navLogout').style.display = 'inline-block';
+         } else {
+             document.getElementById('navGetStarted').style.display = 'inline-block';
+         }
+     } catch(e) {
+         document.getElementById('navGetStarted').style.display = 'inline-block';
+     }
+ }
+
+ async function logout() {
+     await fetch('/api/auth/logout', { method: 'POST' });
+     localStorage.clear();
+     window.location.href = 'index.html';
+ }
+
+ checkAuth();
 </script>
 
 </body>

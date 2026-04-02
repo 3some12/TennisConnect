@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TennisConnect — Book a Session</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap"
+          rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -140,7 +141,7 @@
 <!-- NAV -->
 <nav>
     <a href="index.html" class="nav-logo">Tennis<span>Connect</span></a>
-    <a href="coaches.html" class="nav-back">← Back to Coaches</a>
+    <a href="coaches.html" class="nav-back">← Back</a>
 </nav>
 
 <!-- STEPS BAR -->
@@ -181,22 +182,30 @@
                 <button class="mode-btn active" id="modeCoach" onclick="setMode('coach')">
                     <span class="mode-icon">🎾</span>
                     Coach First
-                    <div style="font-size:0.7rem;margin-top:0.3rem;opacity:0.7">Choose a coach, then pick available courts</div>
+                    <div style="font-size:0.7rem;margin-top:0.3rem;opacity:0.7">Choose a coach, then pick available
+                        courts
+                    </div>
                 </button>
                 <button class="mode-btn" id="modeCourt" onclick="setMode('court')">
                     <span class="mode-icon">🏟️</span>
                     Court First
-                    <div style="font-size:0.7rem;margin-top:0.3rem;opacity:0.7">Choose a court, then see available coaches</div>
+                    <div style="font-size:0.7rem;margin-top:0.3rem;opacity:0.7">Choose a court, then see available
+                        coaches
+                    </div>
                 </button>
             </div>
 
             <div id="coachList">
-                <div style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:#4A6B4D;margin-bottom:0.8rem;">Select a Coach</div>
+                <div style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:#4A6B4D;margin-bottom:0.8rem;">
+                    Select a Coach
+                </div>
                 <div class="list-grid" id="coachListItems"></div>
             </div>
 
             <div id="courtFirstList" style="display:none;">
-                <div style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:#4A6B4D;margin-bottom:0.8rem;">Select a Court</div>
+                <div style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:#4A6B4D;margin-bottom:0.8rem;">
+                    Select a Court
+                </div>
                 <div class="list-grid" id="courtFirstItems"></div>
             </div>
 
@@ -222,9 +231,13 @@
                 <label class="date-label">Select Date</label>
                 <input type="date" class="date-input" id="dateInput" onchange="loadTimeSlots()">
             </div>
-            <div style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:#4A6B4D;margin-bottom:0.8rem;">Available Time Slots</div>
+            <div style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:#4A6B4D;margin-bottom:0.8rem;">
+                Available Time Slots
+            </div>
             <div class="time-slots" id="timeSlots">
-                <div style="grid-column:1/-1;text-align:center;color:#8aab8c;font-size:0.82rem;padding:1rem;">Please select a date first</div>
+                <div style="grid-column:1/-1;text-align:center;color:#8aab8c;font-size:0.82rem;padding:1rem;">Please
+                    select a date first
+                </div>
             </div>
             <div class="nav-buttons">
                 <button class="btn-back" onclick="goToStep(2)">← Back</button>
@@ -258,7 +271,8 @@
                 </div>
             </div>
             <div class="confirm-note">
-                📋 By confirming this booking, you agree to show up on time. Cancellations must be made at least 24 hours in advance. Your coach will be notified and will confirm the session shortly.
+                📋 By confirming this booking, you agree to show up on time. Cancellations must be made at least 24 hours
+                in advance. Your coach will be notified and will confirm the session shortly.
             </div>
             <div class="nav-buttons">
                 <button class="btn-back" onclick="goToStep(3)">← Back</button>
@@ -300,10 +314,13 @@
 <div class="success-screen" id="successScreen">
     <div class="success-icon">🎉</div>
     <div class="success-title">Booking Confirmed!</div>
-    <p class="success-desc">Your session has been booked successfully. Your coach will confirm the session shortly. Check your dashboard for updates.</p>
+    <p class="success-desc">Your session has been booked successfully. Your coach will confirm the session shortly.
+        Check your dashboard for updates.</p>
     <div class="success-actions">
-        <a href="dashboard.html" class="btn-next" style="text-decoration:none;display:inline-block;padding:0.8rem 2rem;">Go to Dashboard</a>
-        <a href="coaches.html" class="btn-back" style="text-decoration:none;display:inline-block;padding:0.8rem 1.5rem;">Book Another</a>
+        <a href="dashboard.html" class="btn-next"
+           style="text-decoration:none;display:inline-block;padding:0.8rem 2rem;">Go to Dashboard</a>
+        <a href="coaches.html" class="btn-back"
+           style="text-decoration:none;display:inline-block;padding:0.8rem 1.5rem;">Book Another</a>
     </div>
 </div>
 <script>
@@ -537,15 +554,58 @@
         updateSummary();
     }
 
-    function loadTimeSlots() {
-        selectedDate = document.getElementById('dateInput').value;
-        selectedTime = null;
-        document.getElementById('nextStep3').disabled = true;
-        updateSummary();
-        document.getElementById('timeSlots').innerHTML = timeSlots.map(t => `
-            <div class="time-slot" onclick="selectTime('${t}', this)">${t}</div>
-        `).join('');
+    async function loadTimeSlots() {
+    selectedDate = document.getElementById('dateInput').value;
+    selectedTime = null;
+    document.getElementById('nextStep3').disabled = true;
+    updateSummary();
+
+    if (!selectedDate) return;
+
+    // 取得已預約的時間
+    let bookedTimes = [];
+    try {
+        const res = await fetch(`/api/orders`);
+        const orders = await res.json();
+        bookedTimes = orders
+            .filter(o =>
+                o.sessionDate === selectedDate &&
+                o.course && o.course.courseId == selectedCourse?.id &&
+                (o.orderStatus === 'confirmed' || o.orderStatus === 'pending')
+            )
+            .map(o => o.sessionTime);
+    } catch(e) {
+        console.error('Failed to load booked times', e);
     }
+
+    // 判斷過去的時間
+    const now = new Date();
+    const selectedDateObj = new Date(selectedDate + 'T00:00:00');
+    const isToday = selectedDateObj.toDateString() === now.toDateString();
+
+    document.getElementById('timeSlots').innerHTML = timeSlots.map(t => {
+        const isBooked = bookedTimes.includes(t);
+
+        // 判斷是否已過
+        let isPast = false;
+        if (isToday) {
+            const [time, period] = t.split(' ');
+            let [hours, minutes] = time.split(':').map(Number);
+            if (period === 'PM' && hours !== 12) hours += 12;
+            if (period === 'AM' && hours === 12) hours = 0;
+            isPast = hours < now.getHours() || (hours === now.getHours() && 0 <= now.getMinutes());
+        }
+
+        const disabled = isBooked || isPast;
+        const label = isBooked ? `${t} · Booked` : t;
+
+        return `<div class="time-slot ${disabled ? 'booked' : ''}"
+            onclick="${disabled ? '' : `selectTime('${t}', this)`}"
+            style="${disabled ? 'cursor:not-allowed;opacity:0.5;' : ''}">
+            ${label}
+        </div>`;
+    }).join('');
+}
 
     function selectTime(time, el) {
         selectedTime = time;
@@ -559,8 +619,8 @@
         document.getElementById('confirmCoach').textContent = selectedCoach?.name || '—';
         document.getElementById('confirmCourt').textContent = selectedCourt?.name || '—';
         document.getElementById('confirmDate').textContent = selectedDate
-            ? new Date(selectedDate).toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
-            : '—';
+        ? new Date(selectedDate + 'T12:00:00').toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
+        : '—';
         document.getElementById('confirmTime').textContent = selectedTime || '—';
     }
 
@@ -573,7 +633,7 @@
         };
         set('sumCoach', selectedCoach?.name);
         set('sumCourt', selectedCourt?.name);
-        set('sumDate', selectedDate ? new Date(selectedDate).toLocaleDateString() : null);
+        set('sumDate', selectedDate ? selectedDate.replace(/-/g, '/') : null);
         set('sumTime', selectedTime);
     }
 
@@ -606,11 +666,13 @@
             return;
         }
         const bookingData = {
-            user: { userId: currentUserId },
-            course: { courseId: selectedCourse.id },
-            orderStatus: 'pending',
-            totalPrice: selectedCourse.price ? parseFloat(selectedCourse.price) + 5 : 85.00
-        };
+        user: { userId: currentUserId },
+        course: { courseId: selectedCourse.id },
+        orderStatus: 'pending',
+        totalPrice: selectedCourse.price ? parseFloat(selectedCourse.price) + 5 : 85.00,
+        sessionDate: selectedDate,
+        sessionTime: selectedTime
+};
         try {
             const res = await fetch('/api/orders', {
                 method: 'POST',
